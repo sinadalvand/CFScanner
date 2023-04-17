@@ -29,7 +29,8 @@ abstract class CFSDatabase : RoomDatabase() {
 
         fun getInstance(context: Context): CFSDatabase {
             if (instance != null) return instance!!
-            instance = Room.databaseBuilder(context, CFSDatabase::class.java, "cfscanner.db").build()
+            instance = Room.databaseBuilder(context, CFSDatabase::class.java, "cfscanner.db")
+                .fallbackToDestructiveMigration().build()
             return instance!!
         }
     }
