@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import ir.filternet.cfscanner.model.Scan
-import ir.filternet.cfscanner.ui.page.sub.history.HistoryContract
-import ir.filternet.cfscanner.ui.page.sub.history.HistoryScreen
-import ir.filternet.cfscanner.ui.page.sub.history.HistoryScreenVM
+import ir.filternet.cfscanner.ui.page.main.history.HistoryContract
+import ir.filternet.cfscanner.ui.page.main.history.HistoryScreen
+import ir.filternet.cfscanner.ui.page.main.history.HistoryScreenVM
 
 @Composable
 fun HistoryScreenDestination(

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ir.filternet.cfscanner.model.Scan
 import ir.filternet.cfscanner.ui.destination.HistoryScreenDestination
@@ -19,7 +18,12 @@ import ir.filternet.cfscanner.ui.destination.ScanScreenDestination
 import ir.filternet.cfscanner.ui.destination.ScanSettingScreenDestination
 
 @Composable
-fun CFScannerSubNavigation(index: Int, parentNavigator: (scan:Scan) -> Unit = {}, callback: (Int) -> Unit = {}) {
+fun CFScannerSubNavigation(
+    index: Int,
+    openScreenDetails: (scan: Scan) -> Unit = {},
+    openCidrManagement: () -> Unit = {},
+    callback: (Int) -> Unit = {},
+) {
     val navController = rememberNavController()
 
     val currentRoute by remember(index) {
@@ -52,13 +56,15 @@ fun CFScannerSubNavigation(index: Int, parentNavigator: (scan:Scan) -> Unit = {}
             }
 
             composable(Navigation.SubRoutes.HISTORY) {
-                HistoryScreenDestination(navController = navController){
-                    parentNavigator(it)
+                HistoryScreenDestination(navController = navController) {
+                    openScreenDetails(it)
                 }
             }
 
             composable(Navigation.SubRoutes.SETTINGS) {
-                ScanSettingScreenDestination(navController = navController)
+                ScanSettingScreenDestination(navController = navController) {
+                    openCidrManagement()
+                }
             }
         }
     }

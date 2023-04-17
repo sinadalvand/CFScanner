@@ -6,9 +6,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import ir.filternet.cfscanner.service.CloudScannerService
 import ir.filternet.cfscanner.service.CloudSpeedService
-import ir.filternet.cfscanner.ui.page.scan.ScanDetailsContract
-import ir.filternet.cfscanner.ui.page.scan.ScanDetailsScreen
-import ir.filternet.cfscanner.ui.page.scan.ScanDetailsScreenVM
+import ir.filternet.cfscanner.ui.page.sub.scan_details.ScanDetailsContract
+import ir.filternet.cfscanner.ui.page.sub.scan_details.ScanDetailsScreen
+import ir.filternet.cfscanner.ui.page.sub.scan_details.ScanDetailsScreenVM
 import ir.filternet.cfscanner.utils.BindService
 
 @Composable

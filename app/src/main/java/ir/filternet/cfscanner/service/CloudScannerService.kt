@@ -200,7 +200,9 @@ class CloudScannerService : Service(),
                 cfScanner.startScan(
                     scan, CFScanner.ScanOptions(
                         parallel = scanSettings.worker.toInt(),
-                        frontingDomain = scanSettings.fronting
+                        frontingDomain = scanSettings.fronting,
+                        autoFetch = scanSettings.autoFetch,
+                        shuffle = scanSettings.shuffle
                     )
                 )
             }
@@ -214,7 +216,9 @@ class CloudScannerService : Service(),
             cfScanner.startScan(
                 scan, CFScanner.ScanOptions(
                     parallel = scanSettings.worker.toInt(),
-                    frontingDomain = scanSettings.fronting
+                    frontingDomain = scanSettings.fronting,
+                    autoFetch = scanSettings.autoFetch,
+                    shuffle = scanSettings.shuffle
                 )
             )
         }

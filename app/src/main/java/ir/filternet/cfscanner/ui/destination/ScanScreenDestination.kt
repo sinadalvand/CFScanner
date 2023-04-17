@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import ir.filternet.cfscanner.service.CloudScannerService
-import ir.filternet.cfscanner.ui.page.sub.scan.ScanScreen
-import ir.filternet.cfscanner.ui.page.sub.scan.ScanScreenVM
+import ir.filternet.cfscanner.ui.page.main.scan.ScanScreen
+import ir.filternet.cfscanner.ui.page.main.scan.ScanScreenVM
 import ir.filternet.cfscanner.utils.BindService
 
 

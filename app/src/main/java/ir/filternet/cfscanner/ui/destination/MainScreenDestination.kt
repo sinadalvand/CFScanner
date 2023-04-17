@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import ir.filternet.cfscanner.ui.navigation.Navigation
-import ir.filternet.cfscanner.ui.page.main.MainContract
-import ir.filternet.cfscanner.ui.page.main.MainScreen
-import ir.filternet.cfscanner.ui.page.main.MainScreenVM
+import ir.filternet.cfscanner.ui.page.root.MainContract
+import ir.filternet.cfscanner.ui.page.root.MainScreen
+import ir.filternet.cfscanner.ui.page.root.MainScreenVM
 
 @Composable
 fun MainScreenDestination(
@@ -21,6 +21,9 @@ fun MainScreenDestination(
             when(navigationEffect){
                 is MainContract.Effect.Navigation.ToScan -> {
                     navController.navigate(Navigation.MainRoutes.ScanDetailsRoute(navigationEffect.scan.uid))
+                }
+                is MainContract.Effect.Navigation.ToCidrManagement -> {
+                    navController.navigate(Navigation.MainRoutes.CIDR_MANAGEMENT)
                 }
             }
         }

@@ -11,6 +11,7 @@ fun ScanConfigISP.mapToScan() =
         configEntity.mapToConfig(),
         this.scanEntity.status,
         this.scanEntity.progress,
+        this.scanEntity.scanCidrOrder,
         this.scanEntity.creationDate,
         this.scanEntity.updateDate,
         this.scanEntity.uid
@@ -23,6 +24,7 @@ fun Scan.mapToScanEntity() =
         config.uid,
         status,
         progress,
+        scanCidrOrder,
         creationDate,
         updateDate,
         uid

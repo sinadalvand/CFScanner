@@ -3,6 +3,7 @@ package ir.filternet.cfscanner.repository
 import ir.filternet.cfscanner.contracts.BasicRepository
 import ir.filternet.cfscanner.db.entity.CidrEntity
 import ir.filternet.cfscanner.mapper.mapToCidr
+import ir.filternet.cfscanner.mapper.mapToCidrEntity
 import ir.filternet.cfscanner.model.CIDR
 import ir.filternet.cfscanner.model.Log
 import ir.filternet.cfscanner.model.STATUS
@@ -12,10 +13,7 @@ import ir.filternet.cfscanner.utils.calculateUsableHostCountBySubnetMask
 import ir.filternet.cfscanner.utils.getFromGithub
 import kotlinx.coroutines.delay
 import okhttp3.Request
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import timber.log.Timber
-import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -32,11 +30,11 @@ class CIDRRepository @Inject constructor(
         "192", "193", "194", "195", "199", "203", "205", "212"
     )
 
-    private val DEPRECATION_TIME = 1000 * 60 * 60 * 10 // 10h
+    private val DEPRECATION_TIME = 1000 * 60 * 60 * 5 // 5h
     private val cidrDao by lazy { db.CIDRDao() }
 
-    suspend fun getAllCIDR(): List<CIDR> {
-        if (isDeprecated()) {
+    suspend fun getAllCIDR(networkFetch:Boolean = true): List<CIDR> {
+        if (isDeprecated() && networkFetch) {
             logger.add(Log("cidrs", "getting CIDRS from network ...", STATUS.INPROGRESS))
             getDataFromNetwork()
             logger.add(Log("cidrs", "CIDRS from network fetched.", STATUS.SUCCESS))
@@ -54,19 +52,28 @@ class CIDRRepository @Inject constructor(
         return cidrDao.findByAddress(address)?.mapToCidr()
     }
 
+    suspend fun updateCidrPositions(list: List<CIDR>) {
+        list.map { it.mapToCidrEntity() }.apply {
+            cidrDao.insertForce(this)
+        }
+    }
+
+    suspend fun deleteCIdr(cidr: CIDR) {
+        cidrDao.delete(cidr.mapToCidrEntity())
+    }
+
+    suspend fun insertCidr(cidr: CIDR) {
+        cidrDao.insert(cidr.mapToCidrEntity())
+    }
+
 
     private suspend fun getDataFromNetwork() {
         val list = arrayListOf<String>()
         try {
-            val result = getCIDRSGithub()?.filter {
-                val firstOctave = it.split(".").firstOrNull()
-                cloudflareOkOctave.contains(firstOctave)
-            }/*?.sortedByDescending {
-                (it.split("/").lastOrNull() ?: "24").toInt()
-            }*/ ?: throw Exception("result is null")
+            val result = getCIDRSGithub() ?: throw Exception("result is null")
             saveAllCIDR(result)
             saveLastUpdate()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             logger.add(Log("cidrs", "CIDRS fetching failed. retry ...", STATUS.FAILED))
             delay(4000)
             getDataFromNetwork()
@@ -104,7 +111,8 @@ class CIDRRepository @Inject constructor(
 
     private suspend fun saveAllCIDR(list: List<String>) {
         var ipCount = 0
-        list.map {
+        var lastPosition = cidrDao.getAll().maxByOrNull { it.position }?.position ?: -1
+        list.mapIndexed { index, it ->
             val splitted = it.split("/")
             val addres = splitted.firstOrNull() ?: ""
             val mask = (splitted.lastOrNull() ?: "0").toInt()
@@ -112,8 +120,12 @@ class CIDRRepository @Inject constructor(
         }.forEach {
             val count = calculateUsableHostCountBySubnetMask(it.subnetMask)
             ipCount += (count)
-            Timber.d("CFScanner: save  ${it.address}/${it.subnetMask} Count: $count")
-            cidrDao.insert(it)
+//            Timber.d("CFScanner: save  ${it.address}/${it.subnetMask} Count: $count")
+
+            val result = cidrDao.insert(it.copy(position = lastPosition + 1))
+            if(result>=0){
+                lastPosition++
+            }
         }
         Timber.d("CFScanner: All ip Count is $ipCount")
     }
@@ -127,7 +139,6 @@ class CIDRRepository @Inject constructor(
     }
 
     private fun isDeprecated(): Boolean {
-        return true
         return getLastUpdateDate().before(Date(System.currentTimeMillis() - DEPRECATION_TIME))
     }
 

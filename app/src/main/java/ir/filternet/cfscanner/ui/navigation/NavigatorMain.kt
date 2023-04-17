@@ -14,9 +14,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import ir.filternet.cfscanner.ui.destination.CidrManagementDestination
 import ir.filternet.cfscanner.ui.destination.MainScreenDestination
 import ir.filternet.cfscanner.ui.destination.ScanDetailsScreenDestination
 import ir.filternet.cfscanner.ui.navigation.Navigation.MainRoutes.ScanDetailsArgs.SCAN_ID
+import ir.filternet.cfscanner.ui.page.sub.cidr_management.CidrManagementScreen
 
 @Composable
 fun CFScannerMainNavigation() {
@@ -45,6 +47,10 @@ fun CFScannerMainNavigation() {
                 ScanDetailsScreenDestination(scanId, navController)
             }
 
+            composable(Navigation.MainRoutes.CIDR_MANAGEMENT) {
+                CidrManagementDestination(navController)
+            }
+
             composable(Navigation.MainRoutes.VPN_SETTINGS) {
 
             }
@@ -52,6 +58,8 @@ fun CFScannerMainNavigation() {
             composable(Navigation.MainRoutes.SCAN_SETTINGS) {
 
             }
+
+
 
         }
     }

@@ -5,6 +5,7 @@ import com.chibatching.kotpref.Kotpref
 import com.chibatching.kotpref.KotprefModel
 import com.chibatching.kotpref.gsonpref.gson
 import com.chibatching.kotpref.gsonpref.gsonNullablePref
+import com.chibatching.kotpref.gsonpref.gsonPref
 import com.google.gson.Gson
 import ir.filternet.cfscanner.model.Connection
 import ir.filternet.cfscanner.model.ScanSettings
@@ -19,7 +20,7 @@ class TinyStorage(context: Context, gson: Gson) : KotprefModel(context) {
     // save last CIDR update time by timestamp format
     var updateCIDR by longPref()
 
-    var scanSettings by gsonNullablePref(default = ScanSettings())
+    var scanSettings by gsonPref(default = ScanSettings())
 
     // save last connection by using scan id and connection id
     private var lastConnection by gsonNullablePref<MutableMap<Int, Connection>>(key = "lastconn")

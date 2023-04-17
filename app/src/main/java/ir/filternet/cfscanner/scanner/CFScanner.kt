@@ -56,12 +56,9 @@ class CFScanner @Inject constructor(
             logger.add(Log("process", "Start Scan Process ..."))
 
             this@CFScanner.scan = scan
-            val cidrs = cidrRepository.getAllCIDR()
-
-            delay(1000)
 
             Timber.d("CFScanner: Start ...")
-            startScan(scan, cidrs, options)
+            startScan(scan, options)
         }
     }
 
@@ -90,11 +87,16 @@ class CFScanner @Inject constructor(
         return discoveryJob?.isActive ?: false
     }
 
-    private suspend fun CoroutineScope.startScan(scan: Scan, cidrs: List<CIDR>, options: ScanOptions) {
+    private suspend fun CoroutineScope.startScan(scan: Scan, options: ScanOptions) {
         val scope = this
-        val allCIDR = cidrs
         val config = scan.config
         val isp = scan.isp
+
+
+        val allCIDR = getScanCidrs(scan,options)
+        this@CFScanner.scan = scan.copy(scanCidrOrder = allCIDR.joinToString(" "){ it.uid.toString() })
+
+        delay(1000)
 
         /* set options */
         val parallel = options.parallel
@@ -112,7 +114,7 @@ class CFScanner @Inject constructor(
         Timber.d("CFScanner: Start Scan by $parallel worker")
         /* ================= */
 
-        if (allCIDR.isEmpty()){
+        if (allCIDR.isEmpty()) {
             logger.add(Log("cidr", "Can not get CIDR list!", STATUS.FAILED))
             logger.add(Log("cidr1", "Operation Will cancel in 5 sec ...", STATUS.FAILED))
             delay(5000)
@@ -203,6 +205,21 @@ class CFScanner @Inject constructor(
         if (this.isActive) {
             logger.add(Log("process", "Scan Finished Successfully.", STATUS.SUCCESS))
             listener?.onScanFinished(scan.copy(progress = ScanProgress(ipCount, scanned, founded)))
+        }
+    }
+
+
+    private suspend fun getScanCidrs(scan: Scan, options: ScanOptions): List<CIDR> {
+        // 1. get scan cidrs order
+        val cidrIdList = scan.scanCidrOrder.ifBlank { null }?.split(" ")?.map { it.trim().toInt() }
+
+        // 2. convert cidrs order to cidr list
+        val cidrList = cidrRepository.getAllCIDR(options.autoFetch)
+
+        return if (!cidrIdList.isNullOrEmpty()) {
+            cidrList.sortedBy { cidrIdList.indexOf(it.uid) }
+        } else {
+            cidrList.let { if (options.shuffle) it.shuffled() else it.sortedBy { it.position } }
         }
     }
 
@@ -351,6 +368,8 @@ class CFScanner @Inject constructor(
     data class ScanOptions(
         val parallel: Int = 4,
         val frontingDomain: String = "",
+        val autoFetch: Boolean = true,
+        val shuffle: Boolean = false,
     )
 
 

@@ -14,14 +14,17 @@ interface CIDRDao {
     @Query("SELECT * FROM cidrs WHERE address = :address LIMIT 1")
     suspend fun findByAddress(address: String): CidrEntity?
 
-    @Update
-    suspend fun updateConfig(vararg cidrEntities: CidrEntity)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateCidr(vararg cidrEntities: CidrEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg cidrEntities: CidrEntity):List<Long>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(cidrEntity: CidrEntity):Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertForce(cidrEntity: List<CidrEntity>):List<Long>
 
     @Delete
     suspend fun delete(cidrEntity: CidrEntity)

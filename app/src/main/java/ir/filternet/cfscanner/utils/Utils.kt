@@ -20,6 +20,22 @@ import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
 
+fun extractValidAddress(text: String):List<String> {
+    val lineItem = text.split(Regex("[,\\n]")).filter { it.isNotEmpty() }
+//    val commaItem = text.split(",").filter { it.isNotEmpty() }
+    val items = mutableListOf<String>()
+        .apply { addAll(lineItem);/*addAll(commaItem);*/ }
+        .map { it.replace("\n","").replace(",","") }
+        .toSet().toMutableList()
+
+    return items.map { it.trim() }.filter {
+        val ip = it.split("/").first()
+        val subment = it.split("/").last().toIntOrNull()
+
+        return@filter (isPureIpAddress(ip) && isValidSubnetMask(subment))
+    }
+}
+
 fun getFromGithub(url: String): String {
     val itemText = mutableListOf<String>()
     val document: Document = Jsoup.connect(url).get()
@@ -379,5 +395,11 @@ fun getIndexByIpAddress(ip: String, address: String, mask: Int): Int {
     val ipLong = ipAddressToLong(ip)
     val ipLongWithMask = ipAddressToLong(address) and (0xFFFFFFFF shl (32 - mask))
     return (ipLong - ipLongWithMask - 1).toInt()
+}
+
+// chack in value is valid subment mask or not
+fun isValidSubnetMask(mask: Int?): Boolean {
+    if (mask == null) return false
+    return mask in 4..32
 }
 

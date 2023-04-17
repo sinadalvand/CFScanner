@@ -21,6 +21,7 @@ data class ScanEntity(
     val configId: Int,
     val status:ScanResultStatus,
     val progress:ScanProgress,
+    val scanCidrOrder:String = "" ,
     val creationDate: Date = Date(),
     val updateDate: Date = Date(),
     @PrimaryKey(autoGenerate = true)

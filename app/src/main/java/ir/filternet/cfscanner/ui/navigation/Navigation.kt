@@ -14,6 +14,8 @@ object Navigation {
         }
         const val SCAN_DETAILS = "scan_details/{$SCAN_ID}"
 
+        const val CIDR_MANAGEMENT = "cidr_management"
+
 
         fun ScanDetailsRoute(scanID:Int):String{
             return "scan_details/$scanID"

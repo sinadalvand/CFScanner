@@ -11,5 +11,7 @@ data class CidrEntity(
     val address: String = "",
     val subnetMask: Int = 24,
     val date: Date = Date(),
+    val custom:Boolean = false,
+    val position: Int = -1,
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
 )
