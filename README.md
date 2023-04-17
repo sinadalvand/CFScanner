@@ -25,7 +25,7 @@
 ## 📱 Installation
 
 <pre>
-You can download application APK from <a href="https://github.com/sinadalvand/CFScanner/releases">release section</a> in right side of page 
+You can download application APK from <a href="https://github.com/0ut0fCode/CFScanner/releases">release section</a> in right side of page 
 
 If you are confused about which version to download, you should choose
 APk by the name of CFScanner-X.X.X-release-all.apk
