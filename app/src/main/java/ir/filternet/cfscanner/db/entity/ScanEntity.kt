@@ -8,7 +8,14 @@ import ir.filternet.cfscanner.model.ScanProgress
 import ir.filternet.cfscanner.model.ScanResultStatus
 import java.util.*
 
-@Entity(tableName = "scans")
+@Entity(tableName = "scans", foreignKeys = [
+    ForeignKey(
+        entity = ConfigEntity::class,
+        parentColumns = ["uid"],
+        childColumns = ["configId"],
+        onDelete = ForeignKey.CASCADE,
+    ),
+])
 data class ScanEntity(
     val ispId: Int,
     val configId: Int,

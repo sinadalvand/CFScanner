@@ -7,7 +7,7 @@ import java.util.*
     ForeignKey(
         entity = ScanEntity::class,
         parentColumns = ["uid"],
-        childColumns = ["uid"],
+        childColumns = ["scanId"],
         onDelete = ForeignKey.CASCADE,
     ),
 ])

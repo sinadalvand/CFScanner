@@ -55,8 +55,8 @@ class CFScanner @Inject constructor(
 
             logger.add(Log("process", "Start Scan Process ..."))
 
-            val cidrs = cidrRepository.getAllCIDR()
             this@CFScanner.scan = scan
+            val cidrs = cidrRepository.getAllCIDR()
 
             delay(1000)
 
@@ -112,6 +112,13 @@ class CFScanner @Inject constructor(
         Timber.d("CFScanner: Start Scan by $parallel worker")
         /* ================= */
 
+        if (allCIDR.isEmpty()){
+            logger.add(Log("cidr", "Can not get CIDR list!", STATUS.FAILED))
+            logger.add(Log("cidr1", "Operation Will cancel in 5 sec ...", STATUS.FAILED))
+            delay(5000)
+            this@CFScanner.stopScan(true, "Can not get CIDR list!")
+            yield()
+        }
         val ipCount = allCIDR.map { calculateUsableHostCountBySubnetMask(it.subnetMask) }.reduce { a, i -> a + i }
         logger.add(Log("ips", "$ipCount IPs found to check.", STATUS.SUCCESS))
 
