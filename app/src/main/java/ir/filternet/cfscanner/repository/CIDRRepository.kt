@@ -103,7 +103,7 @@ class CIDRRepository @Inject constructor(
         // https://gist.github.com/[gist_user]/[gist_id]/raw/
         return try {
             val request = Request.Builder()
-                .url("https://gist.github.com/0ut0fCode/7940951de279508dae576126628abb77/raw/")
+                .url("https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/main/config/cf.local.iplist")
                 .build()
             val response = okHttp.newCall(request).execute()
             val body = response.body?.string()
