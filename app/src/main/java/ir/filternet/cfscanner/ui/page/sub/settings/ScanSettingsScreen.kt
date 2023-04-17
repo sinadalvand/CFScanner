@@ -68,7 +68,7 @@ fun ScanSettingScreen(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .clickable {
-                    context.openBrowser("https://github.com/sinadalvand/CFScanner/releases")
+                    context.openBrowser("https://github.com/0ut0fCode/CFScanner-Android/releases")
                 }
                 .padding(8.dp), textAlign = TextAlign.Center
         )
