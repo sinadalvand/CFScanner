@@ -36,6 +36,7 @@ android {
         }
 
 
+        buildConfigField "String", "YandexID", properties.getProperty('yandexID', '"EnterYourIdHere"')
         buildConfigField "String", "FrontingAddress", properties.getProperty('fronting_address', '"speed.cloudflare.com"')
         buildConfigField "String", "appName", "\"$applicationName\""
         setProperty("archivesBaseName", "$applicationName-V$versionName-C$versionCode")

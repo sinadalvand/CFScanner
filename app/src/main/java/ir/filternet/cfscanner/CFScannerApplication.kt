@@ -44,7 +44,7 @@ class CFScannerApplication : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
-        val config = YandexMetricaConfig.newConfigBuilder(AppConfig.YANDEX_METRICA_KEY).build()
+        val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YandexID).build()
         YandexMetrica.activate(this, config)
         YandexMetrica.enableActivityAutoTracking(this)
     }
