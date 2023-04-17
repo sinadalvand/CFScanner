@@ -22,11 +22,11 @@ class CFSpeed @Inject constructor(
     private val scanRepository: ScanRepository,
     private val tinyStorage: TinyStorage,
     private val rawClient:OkHttpClient,
+    private val v2rarUtils:V2rayConfigUtil
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + SupervisorJob()) {
 
     private var scanDomain = "filesamples.com/"
-    private val v2rarUtils = V2rayConfigUtil(context)
     private var listener: CFSpeedListener? = null
     private var job: Job? = null
 

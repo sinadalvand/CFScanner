@@ -9,12 +9,36 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.*
-import java.util.regex.Pattern
 import kotlin.math.pow
 
+fun generateString(): String {
+    val letters = ('a'..'z') + ('0'..'9')
+    val groups = mutableListOf<String>()
+    repeat(4) {
+        val group = (1..4).map { letters.random() }.joinToString("")
+        groups.add(group)
+    }
+    return groups.joinToString("-")
+}
+
+fun String?.isValidJson(): Boolean {
+    try {
+        JSONObject(this)
+    } catch (ex: JSONException) {
+        try {
+            JSONArray(this)
+        } catch (ex1: JSONException) {
+            return false
+        }
+    }
+    return true
+}
 
 /**
  * create qrcode using zxing

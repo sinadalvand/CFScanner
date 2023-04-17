@@ -34,6 +34,7 @@ class CFScanner @Inject constructor(
     val connectionRepository: ConnectionRepository,
     val logger: CFSLogger,
     val rawClient: OkHttpClient,
+    val v2rarUtils: V2rayConfigUtil,
 ) : CoroutineScope by CoroutineScope(Dispatchers.IO + SupervisorJob()) {
 
     private var frontDomain = BuildConfig.FrontingAddress
@@ -44,7 +45,6 @@ class CFScanner @Inject constructor(
     private var listener: CFScannerListener? = null
 
     private val cidrs: ArrayList<CIDR> = arrayListOf()
-    private val v2rarUtils = V2rayConfigUtil(context)
     private var scan: Scan? = null
 
     fun startScan(scan: Scan, options: ScanOptions = ScanOptions()) {
@@ -69,7 +69,7 @@ class CFScanner @Inject constructor(
         logger.add(Log("process", "Scan Stopping ...", STATUS.INPROGRESS))
         Timber.d("CFScanner: Stopped!")
         discoveryJob?.cancel()
-        listener?.onScanPaused(scan!!, reason,byUser)
+        listener?.onScanPaused(scan!!, reason, byUser)
         if (byUser) {
             logger.add(Log("process", "Scan stopped successfully.", STATUS.SUCCESS))
         } else {
@@ -140,7 +140,7 @@ class CFScanner @Inject constructor(
                             getIndexByIpAddress(conn.ip, cidrI.address, cidrI.subnetMask)
                         } ?: -1
                     } else -1
-                }?:-1
+                } ?: -1
 
                 /* Start Scan Log */
                 logger.add(Log(cidr.address, "Start Scan for ${cidr.address}/${cidr.subnetMask}", STATUS.INPROGRESS))
@@ -171,13 +171,12 @@ class CFScanner @Inject constructor(
                                     logger.add(Log(it, "$it ($delay ms)", STATUS.SUCCESS))
                                     Timber.d("CFScanner: result status for $it ==> Success (${delay}ms)")
                                 } else {
-                                    logger.add(Log(it, "$it (Error)", STATUS.FAILED))
                                     Timber.d("CFScanner: result status for $it ==> Failed!")
                                 }
 
                                 val progress = ScanProgress(ipCount, scanned, founded)
                                 val updatedScan = scan.copy(progress = progress)
-                                this@CFScanner.scan  = updatedScan
+                                this@CFScanner.scan = updatedScan
                                 val connection = Connection(it, updatedScan, cidr, delay = delay)
                                 listener?.onConnectionUpdate(updatedScan, connection)
 
@@ -296,6 +295,10 @@ class CFScanner @Inject constructor(
         if (client.isRunning()) {
             client.disconnect()
         }
+
+        if (delay < 0) {
+            logger.add(Log(ip, "$ip (V2ray Failed!)", STATUS.FAILED))
+        }
         return delay
     }
 
@@ -335,7 +338,7 @@ class CFScanner @Inject constructor(
 
         fun onScanFinished(scan: Scan)
 
-        fun onScanPaused(scan: Scan, reason: String,byUser:Boolean)
+        fun onScanPaused(scan: Scan, reason: String, byUser: Boolean)
     }
 
     data class ScanOptions(

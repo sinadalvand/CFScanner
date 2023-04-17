@@ -11,5 +11,7 @@ enum class EConfigType(val value: Int, val protocolScheme: String) {
 
     companion object {
         fun fromInt(value: Int) = values().firstOrNull { it.value == value }
+
+        fun fromString(value: String) = values().firstOrNull { it.protocolScheme.replace("://","") == value }
     }
 }

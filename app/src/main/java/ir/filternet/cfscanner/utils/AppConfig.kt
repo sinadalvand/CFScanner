@@ -88,7 +88,11 @@ object AppConfig {
     const val MSG_MEASURE_CONFIG_CANCEL = 72
 
 
+
     const val APPLICATION_REPOSITORY = "https://github.com/MortezaBashsiz/CFScanner/releases/"
-    const val CIDR_Address = "https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/dev/config/cf.local.iplist"
-    const val Config_Address = "https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/main/bash/ClientConfig.json"
+//    const val CIDR_Address = "https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/dev/config/cf.local.iplist"
+    const val CIDR_Address = "https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/main/config/cf.local.iplist"
+//    const val CIDR_Address = "https://gist.github.com/0ut0fCode/7940951de279508dae576126628abb77/raw/"
+    const val Config_Address = "https://raw.githubusercontent.com/MortezaBashsiz/CFScanner/main/config/ClientConfig.json"
+    const val YANDEX_METRICA_KEY = "6fae7880-b925-45d4-9162-891d485a3173"
 }

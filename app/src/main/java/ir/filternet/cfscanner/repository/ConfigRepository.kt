@@ -6,8 +6,10 @@ import ir.filternet.cfscanner.mapper.mapToConfig
 import ir.filternet.cfscanner.mapper.mapToConfigEntity
 import ir.filternet.cfscanner.model.Config
 import ir.filternet.cfscanner.scanner.v2ray.V2rayConfig
+import ir.filternet.cfscanner.scanner.v2ray.V2rayConfigUtil
 import ir.filternet.cfscanner.utils.AppConfig
 import ir.filternet.cfscanner.utils.ConnectionUtils
+import ir.filternet.cfscanner.utils.generateString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -20,21 +22,23 @@ import javax.inject.Singleton
 @Singleton
 class ConfigRepository @Inject constructor(
     private val retrofit: OkHttpClient,
-    private val scanRepository: ScanRepository
-    ) : BasicRepository() {
+    private val scanRepository: ScanRepository,
+    private val v2rayUtils: V2rayConfigUtil,
+) : BasicRepository() {
+
 
     private val configDao by lazy { db.configDao() }
 
     suspend fun getDefaultConfig(): Config? {
-        return getDefaultConfigFromGithub()
+        return getDefaultConfigFromGithub()?.fillByV2rayConfig()
     }
 
     suspend fun getAllConfig(): List<Config> {
-        return configDao.getAllConfigs().map { it.mapToConfig() }.reversed()
+        return configDao.getAllConfigs().map { it.mapToConfig().fillByV2rayConfig() }.reversed()
     }
 
     suspend fun getConfigById(id: Int): Config {
-        return configDao.loadAllByIds(intArrayOf(id)).first().mapToConfig()
+        return configDao.loadAllByIds(intArrayOf(id)).first().mapToConfig().fillByV2rayConfig()
     }
 
     suspend fun addConfig(config: Config) {
@@ -75,8 +79,14 @@ class ConfigRepository @Inject constructor(
             val host = obj.get("host")?.jsonPrimitive?.content
             val port = obj.get("port")?.jsonPrimitive?.content
             val path = obj.get("path")?.jsonPrimitive?.content
-            val serverName = obj.get("serverName")?.jsonPrimitive?.content
-            val config = "vless://${id}@${host}:${port}?encryption=none&security=tls&sni=${serverName}&type=ws&host=${host}&path=${path}#Default"
+            val serverName = (generateString()+"."+ host?.substringAfter(".")) ?: ""
+            val config = v2rayUtils.getDefaultConfigTemplate()
+                .replace("IDID", id ?: "")
+                .replace("IP.IP.IP.IP", host ?: "")
+                .replace("CFPORTCFPORT", port ?: "")
+                .replace("HOSTHOST", host ?: "")
+                .replace("ENDPOINTENDPOINT", path?: "")
+                .replace("RANDOMHOST", serverName ?: "")
             Config(config, "Default", uid = 1324)
         } catch (e: Exception) {
             println("An error occurred: " + e.message)
@@ -84,4 +94,6 @@ class ConfigRepository @Inject constructor(
             null
         }
     }
+
+    private fun Config.fillByV2rayConfig():Config = this.copy(v2rayConfig = v2rayUtils.createV2rayConfig(this.config))
 }

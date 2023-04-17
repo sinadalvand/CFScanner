@@ -2,11 +2,16 @@ package ir.filternet.cfscanner.ui.page.sub.scan.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
@@ -78,7 +83,8 @@ fun ConfigEditDialog(
                         .border(1.dp, MaterialTheme.colors.primary, RoundedCornerShape(7.dp))
                         .padding(4.dp)
                         .fillMaxWidth(0.9f),
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    maxLines = 8,
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

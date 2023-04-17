@@ -33,28 +33,8 @@ object ConnectionUtils : CoroutineScope by CoroutineScope(Dispatchers.IO) {
 
     // check this host use Cloudflare CDN for access providing
     suspend fun isCloudflareCDN(address: String): Boolean {
-        return try {
-            val client = client
-            val formBody: RequestBody = FormBody.Builder()
-                .add("ip", address)
-                .build()
-            val request = Request.Builder().url("https://iplookup.flagfox.net/").post(formBody).build()
-            val response = client.newCall(request).execute()
-            yield()
-            val inputText = response.body?.charStream()?.readText() ?: ""
-            val rawtext = inputText.substringAfter("ISP\t\t\t\t\t</td>").substringBefore("</td>").substringAfter("width=\"33%\">").trim().run {
-                if (this.contains("<span class=\"smallfont\">")) {
-                    return@run this.substringAfter("<span class=\"smallfont\">").substringBefore("</span>").trim()
-                }
-                return@run this
-            }
-            response.body?.close()
-            response.close()
-            rawtext.contains("CLOUDFLARE",true)
-           } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+        // TODO check fronting before add Config
+        return true
     }
 
     // get current internet provider service

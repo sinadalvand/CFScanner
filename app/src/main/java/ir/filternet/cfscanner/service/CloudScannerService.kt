@@ -89,21 +89,25 @@ class CloudScannerService : Service(),
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
             .buffer(5, TimeUnit.SECONDS)
-            .subscribe {
+            .subscribe({
                 runBlocking {
                     saveConnections(it)
                 }
-            }
+            },{
+                Timber.d("On Connection Flow:" + it.message)
+            })
 
         progressFlow = _progressFlow
             .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.io())
             .buffer(2, TimeUnit.SECONDS)
-            .subscribe {
+            .subscribe({
                 runBlocking {
                     saveProgress(it.lastOrNull())
                 }
-            }
+            },{
+                Timber.d("On Progress Flow:" + it.message)
+            })
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

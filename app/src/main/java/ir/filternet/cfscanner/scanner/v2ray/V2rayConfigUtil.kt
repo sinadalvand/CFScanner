@@ -10,7 +10,7 @@ import ir.filternet.cfscanner.utils.*
 import java.net.URI
 import javax.inject.Inject
 
-class V2rayConfigUtil @Inject constructor(@ApplicationContext private val context: Context) {
+class V2rayConfigUtil @Inject constructor(@ApplicationContext private val context: Context,private val gson: Gson) {
 
     fun createV2rayConfig(text: String): V2rayConfig? {
         return createServerConfig(text)?.fullConfig
@@ -18,6 +18,10 @@ class V2rayConfigUtil @Inject constructor(@ApplicationContext private val contex
 
     fun createV2rayConfigString(text: String): String? {
         return createServerConfig(text)?.fullConfig?.toPrettyPrinting()
+    }
+
+    fun getDefaultConfigTemplate(): String {
+        return readTextFromAssets(context, "v2ray_default.json")
     }
 
     fun createServerConfig(text: String): ServerConfig? {
@@ -30,13 +34,13 @@ class V2rayConfigUtil @Inject constructor(@ApplicationContext private val contex
             outbounds = getV2rayOutboundConfig(serverConfig, settings)
             routing = getV2rayRoutingConfig(settings)
             fakedns = getV2rayFakeDnsConfig(settings)
-            dns = getV2rayDnsConfig(settings,this)
+            dns = getV2rayDnsConfig(settings, this)
 
-            if(settings.localDnsEnabled){
-                setCustomLocalDns(settings,this)
+            if (settings.localDnsEnabled) {
+                setCustomLocalDns(settings, this)
             }
 
-            if(settings.speedEnabled){
+            if (settings.speedEnabled) {
                 stats = null
                 policy = null
             }
@@ -418,6 +422,13 @@ class V2rayConfigUtil @Inject constructor(@ApplicationContext private val contex
                 return null
             }
 
+
+            if (str.isValidJson()) {
+                val parsedConfig = convertJsonConfigToV2rayConfig(str) ?: return null
+                val type = EConfigType.fromString(parsedConfig.outbounds.firstOrNull()?.protocol ?: "") ?: EConfigType.VMESS
+                return  ServerConfig(configType = type, outboundBean = parsedConfig.outbounds.firstOrNull())
+            }
+
             var config: ServerConfig? = null
             val allowInsecure = false
             if (str.startsWith(EConfigType.VMESS.protocolScheme)) {
@@ -696,5 +707,15 @@ class V2rayConfigUtil @Inject constructor(@ApplicationContext private val contex
             return false
         }
     }
+
+    private fun convertJsonConfigToV2rayConfig(jsonConfig: String?): V2rayConfig? {
+        return try {
+            gson.fromJson(jsonConfig, V2rayConfig::class.java)
+        }catch (e:Exception){
+            e.printStackTrace()
+            return null
+        }
+    }
+
 
 }

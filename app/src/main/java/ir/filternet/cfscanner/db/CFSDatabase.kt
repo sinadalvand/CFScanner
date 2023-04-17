@@ -19,7 +19,7 @@ import ir.filternet.cfscanner.db.entity.*
         ISPEntity::class,
         ConnectionEntity::class,
         ScanEntity::class,
-    ], version = 2
+    ], version = 2,
 )
 @TypeConverters(DateConvertor::class, ScanStatusConvertor::class, ProgressConvertor::class)
 abstract class CFSDatabase : RoomDatabase() {
@@ -30,7 +30,8 @@ abstract class CFSDatabase : RoomDatabase() {
         fun getInstance(context: Context): CFSDatabase {
             if (instance != null) return instance!!
             instance = Room.databaseBuilder(context, CFSDatabase::class.java, "cfscanner.db")
-                .fallbackToDestructiveMigration().build()
+                .fallbackToDestructiveMigration()
+                .build()
             return instance!!
         }
     }

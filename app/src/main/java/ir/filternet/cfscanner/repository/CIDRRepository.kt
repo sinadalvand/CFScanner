@@ -58,9 +58,9 @@ class CIDRRepository @Inject constructor(
             val result = getCIDRSGithub()?.filter {
                 val firstOctave = it.split(".").firstOrNull()
                 cloudflareOkOctave.contains(firstOctave)
-            }?.sortedByDescending {
+            }/*?.sortedByDescending {
                 (it.split("/").lastOrNull() ?: "24").toInt()
-            } ?: throw Exception("result is null")
+            }*/ ?: throw Exception("result is null")
             saveAllCIDR(result)
             saveLastUpdate()
         }catch (e:Exception){

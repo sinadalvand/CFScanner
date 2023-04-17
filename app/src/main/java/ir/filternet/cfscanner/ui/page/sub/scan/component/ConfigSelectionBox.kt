@@ -150,7 +150,9 @@ private fun ConfigItem(config: Config, selected: Boolean = false, edit: () -> Un
                     .weight(1f), verticalArrangement = Arrangement.Center
             ) {
                 Text(text = config.name, color = color, fontWeight = FontWeight.Bold)
-                Text(text = config.config.split("@").lastOrNull() ?: config.config, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                val port = config.v2rayConfig?.outbounds?.firstOrNull()?.settings?.vnext?.firstOrNull()?.port ?: 443
+                val address = config.v2rayConfig?.outbounds?.firstOrNull()?.streamSettings?.wsSettings?.headers?.Host?.let { "$it:$port" } ?: config.config.split("@").lastOrNull() ?: config.config
+                Text(text = address, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }
