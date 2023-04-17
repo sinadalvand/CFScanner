@@ -12,10 +12,31 @@ import com.google.zxing.qrcode.QRCodeWriter
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import timber.log.Timber
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
+
+fun getFromGithub(url: String): String {
+    val itemText = mutableListOf<String>()
+    val document: Document = Jsoup.connect(url).get()
+    val table = document.getElementsByClass("highlight tab-size js-file-line-container js-code-nav-container js-tagsearch-file")
+    val rows = table.select("tr")
+    for (row in rows) {
+        val cols = row.select("td")
+        if (cols.size > 1) {
+            val cidr = cols[1]
+            val content = cidr.text()
+            Timber.d("Content: $content")
+            itemText.add(content)
+        }
+    }
+//    Timber.d("Elements: $itemText")
+    return itemText.joinToString (separator = "\n"){ it }
+}
 
 fun generateString(): String {
     val letters = ('a'..'z') + ('0'..'9')
@@ -47,8 +68,10 @@ fun createQRCode(text: String, size: Int = 800): Bitmap? {
     try {
         val hints = HashMap<EncodeHintType, String>()
         hints[EncodeHintType.CHARACTER_SET] = "utf-8"
-        val bitMatrix = QRCodeWriter().encode(text,
-            BarcodeFormat.QR_CODE, size, size, hints)
+        val bitMatrix = QRCodeWriter().encode(
+            text,
+            BarcodeFormat.QR_CODE, size, size, hints
+        )
         val pixels = IntArray(size * size)
         for (y in 0 until size) {
             for (x in 0 until size) {
@@ -60,8 +83,10 @@ fun createQRCode(text: String, size: Int = 800): Bitmap? {
 
             }
         }
-        val bitmap = Bitmap.createBitmap(size, size,
-            Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(
+            size, size,
+            Bitmap.Config.ARGB_8888
+        )
         bitmap.setPixels(pixels, 0, size, 0, 0, size, size)
         return bitmap
     } catch (e: WriterException) {
@@ -71,11 +96,10 @@ fun createQRCode(text: String, size: Int = 800): Bitmap? {
 }
 
 
-
 /**
  * get remote dns servers from preference
  */
-fun getDomesticDnsServers(domesticDns:String): List<String> {
+fun getDomesticDnsServers(domesticDns: String): List<String> {
     val ret = domesticDns.split(",").filter { isPureIpAddress(it) || isCoreDNSAddress(it) }
     if (ret.isEmpty()) {
         return listOf(AppConfig.DNS_DIRECT)
@@ -86,7 +110,7 @@ fun getDomesticDnsServers(domesticDns:String): List<String> {
 /**
  * get remote dns servers from preference
  */
-fun getRemoteDnsServers(remoteDns:String = AppConfig.DNS_AGENT): List<String> {
+fun getRemoteDnsServers(remoteDns: String = AppConfig.DNS_AGENT): List<String> {
     val ret = remoteDns.split(",").filter { isPureIpAddress(it) || isCoreDNSAddress(it) }
     if (ret.isEmpty()) {
         return listOf(AppConfig.DNS_AGENT)
@@ -95,7 +119,7 @@ fun getRemoteDnsServers(remoteDns:String = AppConfig.DNS_AGENT): List<String> {
 }
 
 // try PREF_VPN_DNS then PREF_REMOTE_DNS
-fun getVpnDnsServers(vpnDns:String=AppConfig.DNS_AGENT): List<String> {
+fun getVpnDnsServers(vpnDns: String = AppConfig.DNS_AGENT): List<String> {
     return vpnDns.split(",").filter { isPureIpAddress(it) }
     // allow empty, in that case dns will use system default
 }
@@ -267,8 +291,8 @@ fun urlEncode(url: String): String {
 
 fun fixIllegalUrl(str: String): String {
     return str
-        .replace(" ","%20")
-        .replace("|","%7C")
+        .replace(" ", "%20")
+        .replace("|", "%7C")
 }
 
 fun getUuid(): String {
@@ -310,8 +334,8 @@ fun longToIpAddress(ipAddress: Long): String {
     return "${(ipAddress shr 24) and 0xFF}.${(ipAddress shr 16) and 0xFF}.${(ipAddress shr 8) and 0xFF}.${ipAddress and 0xFF}"
 }
 
-fun downloadTestLinks(size:Float):String{
-    return when{
+fun downloadTestLinks(size: Float): String {
+    return when {
         size >= 2560f -> "samples/audio/hcom/sample4.hcom"
         size >= 2048f -> "samples/image/xpm/sample_1280%C3%97853.xpm"
         size >= 1524f -> "samples/image/exr/sample_640%C3%97426.exr"
@@ -328,7 +352,6 @@ fun downloadTestLinks(size:Float):String{
 fun calculateUsableHostCountBySubnetMask(mask: Int): Int {
     return 2.0.pow((32 - mask) * 1.0).toInt() - 2
 }
-
 
 
 /** get ip address and subnet mask and Index then return deserve ip address

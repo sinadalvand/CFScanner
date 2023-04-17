@@ -10,6 +10,7 @@ import ir.filternet.cfscanner.scanner.v2ray.V2rayConfigUtil
 import ir.filternet.cfscanner.utils.AppConfig
 import ir.filternet.cfscanner.utils.ConnectionUtils
 import ir.filternet.cfscanner.utils.generateString
+import ir.filternet.cfscanner.utils.getFromGithub
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -47,7 +48,6 @@ class ConfigRepository @Inject constructor(
 
     suspend fun deleteConfig(config: Config) {
         configDao.delete(config.mapToConfigEntity())
-        scanRepository.getScanByConfig(config)
     }
 
     suspend fun checkConfigIsCloudflare(config: V2rayConfig): Boolean {
@@ -69,11 +69,7 @@ class ConfigRepository @Inject constructor(
      */
     private suspend fun getDefaultConfigFromGithub(): Config? {
         return try {
-            val request = Request.Builder()
-                .url(AppConfig.Config_Address)
-                .build()
-            val response = okHttp.newCall(request).execute()
-            val body = response.body?.string() ?: return null
+            val body = getFromGithub(AppConfig.Config_Address)
             val obj = Json.decodeFromString<JsonObject>(body)
             val id = obj.get("id")?.jsonPrimitive?.content
             val host = obj.get("host")?.jsonPrimitive?.content

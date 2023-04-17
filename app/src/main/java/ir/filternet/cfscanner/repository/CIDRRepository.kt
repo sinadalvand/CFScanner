@@ -9,8 +9,11 @@ import ir.filternet.cfscanner.model.STATUS
 import ir.filternet.cfscanner.scanner.CFSLogger
 import ir.filternet.cfscanner.utils.AppConfig
 import ir.filternet.cfscanner.utils.calculateUsableHostCountBySubnetMask
+import ir.filternet.cfscanner.utils.getFromGithub
 import kotlinx.coroutines.delay
 import okhttp3.Request
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
@@ -72,42 +75,10 @@ class CIDRRepository @Inject constructor(
 
     }
 
-    private fun getCidrsListfromAS(asn: String): List<String>? {
-        try {
-            val cidrList = mutableListOf<String>()
-            val url = "https://asnlookup.com/asn/$asn/"
-            val request = Request.Builder().url(url).build()
-            okHttp.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                val htmlContent = response.body?.string()
-                val cidrRegex = Regex("""<li><a href="/cidr/.*0/""")
-                val cidrMatchResults = cidrRegex.findAll(htmlContent!!)
-                for (matchResult in cidrMatchResults) {
-                    val cidrLine = matchResult.value
-                    val cidr = Regex("""cidr/([^"]*)""").find(cidrLine)?.groupValues?.get(1)
-                    if (cidr != null && !cidr.startsWith("8.") && !cidr.startsWith("1.")) {
-                        cidrList.add(cidr)
-                    }
-                }
-                return cidrList
-            }
-        } catch (e: Exception) {
-            println("An error occurred: " + e.message)
-            e.printStackTrace()
-            return null
-        }
-    }
-
 
     private fun getCIDRSGithub(): List<String>? {
         return try {
-            val request = Request.Builder()
-                .url(AppConfig.CIDR_Address)
-                .build()
-            val response = okHttp.newCall(request).execute()
-            val body = response.body?.string()
-
-            body?.lines()?.toList() ?: emptyList()
+            getFromGithub(AppConfig.CIDR_Address).lines().toList() ?: emptyList()
         } catch (e: Exception) {
             println("An error occurred: " + e.message)
             e.printStackTrace()
@@ -156,6 +127,7 @@ class CIDRRepository @Inject constructor(
     }
 
     private fun isDeprecated(): Boolean {
+        return true
         return getLastUpdateDate().before(Date(System.currentTimeMillis() - DEPRECATION_TIME))
     }
 
