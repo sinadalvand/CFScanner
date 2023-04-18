@@ -10,6 +10,12 @@ apply plugin : "appmetrica-plugin"
 
 def applicationName = "CFScanner"
 
+Properties properties = new Properties()
+if (project.rootProject.file('local.properties').canRead()) {
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+}
+
+
 android {
     namespace 'ir.filternet.cfscanner'
     compileSdk 33
@@ -31,12 +37,8 @@ android {
         }
 
 
-        Properties properties = new Properties()
-        if (project.rootProject.file('local.properties').canRead()) {
-            properties.load(project.rootProject.file("local.properties").newDataInputStream())
-        }
 
-        buildConfigField "String", "YandexID", properties.getProperty('yandexID', '"EnterYourIdHere"')
+        buildConfigField "String", "YandexID", properties.getProperty('yandexApiKey', '"EnterYourIdHere"')
         buildConfigField "String", "FrontingAddress", properties.getProperty('fronting_address', '"speed.cloudflare.com"')
         buildConfigField "String", "appName", "\"$applicationName\""
         setProperty("archivesBaseName", "$applicationName-V$versionName-C$versionCode")
@@ -219,7 +221,7 @@ dependencies {
 }
 
 appmetrica {
-    postApiKey = { applicationVariant -> "f8f358e4-2dfb-479c-90fb-ebb45427b71e" }
+    postApiKey = { applicationVariant -> properties.getProperty('yandexPostApiKey', '"EnterYourYandexPostApiKeyHere"') }
     enable = { applicationVariant -> true }
     mappingBuildTypes = ['release']
     offline = false
