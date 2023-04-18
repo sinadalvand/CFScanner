@@ -2,6 +2,10 @@ package ir.filternet.cfscanner
 
 import android.app.Application
 import android.content.Context
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
+import com.yandex.metrica.ReporterConfig
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import dagger.hilt.android.HiltAndroidApp
@@ -44,7 +48,23 @@ class CFScannerApplication : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
-        val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YandexID).build()
+        // firebase init
+        FirebaseApp.initializeApp(this)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.d("Fetching FCM registration token failed")
+            }else{
+                val token = task.result
+                Timber.d("Fetched FCM token: $token")
+            }
+
+        })
+
+
+        // yandex init
+        val config = YandexMetricaConfig.newConfigBuilder(BuildConfig.YandexID)
+            .withSessionTimeout(10)
+            .build()
         YandexMetrica.activate(this, config)
         YandexMetrica.enableActivityAutoTracking(this)
     }
