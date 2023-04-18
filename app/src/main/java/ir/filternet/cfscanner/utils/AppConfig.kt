@@ -92,5 +92,4 @@ object AppConfig {
     const val APPLICATION_REPOSITORY = "https://github.com/MortezaBashsiz/CFScanner/releases/"
     const val CIDR_Address = "https://github.com/MortezaBashsiz/CFScanner/blob/main/config/cf.local.iplist"
     const val Config_Address = "https://github.com/MortezaBashsiz/CFScanner/blob/main/config/ClientConfig.json"
-    const val YANDEX_METRICA_KEY = "6fae7880-b925-45d4-9162-891d485a3173"
 }
