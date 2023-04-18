@@ -94,7 +94,7 @@ fun CidrManagementScreen(
         state = listDragState.listState,
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+            .padding(horizontal = 10.dp)
             .reorderable(listDragState)
             .detectReorderAfterLongPress(listDragState),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,6 +142,7 @@ fun CidrManagementScreen(
 
         if (!shuffleEnabled)
             items(data, { it.uid }) { item ->
+                Spacer(modifier = Modifier.height(4.dp))
                 ReorderableItem(listDragState, key = item.uid) { isDragging ->
                     val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
                     Column(
@@ -149,13 +150,13 @@ fun CidrManagementScreen(
                             .shadow(elevation.value)
                             .background(MaterialTheme.colors.surface)
                     ) {
-                        Spacer(modifier = Modifier.height(2.dp))
+
                         IpRangeList(item, isDragging) {
                             onEventSent.invoke(CidrManagementContract.Event.RemoveCIDR(item))
                         }
-                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
+                Spacer(modifier = Modifier.height(4.dp))
             }
     }
 }
@@ -282,7 +283,7 @@ private fun IpRangeList(cidr: CIDR, dragging: Boolean = false, delete: () -> Uni
         tween(500)
     )
     Column {
-        Spacer(modifier = Modifier.height(4.dp))
+
         Card(
             Modifier
                 .fillMaxWidth(),
@@ -307,7 +308,7 @@ private fun IpRangeList(cidr: CIDR, dragging: Boolean = false, delete: () -> Uni
                 Text(
                     text = "#${cidr.position + 1}",
                     fontWeight = FontWeight.Bold,
-                    color = if (dragging) Color.White else Gray.copy(0.8f)
+                    color = if (dragging) MaterialTheme.colors.onBackground else Gray.copy(0.8f)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -346,7 +347,7 @@ private fun IpRangeList(cidr: CIDR, dragging: Boolean = false, delete: () -> Uni
             }
 
         }
-        Spacer(modifier = Modifier.height(4.dp))
+
     }
 
 }
