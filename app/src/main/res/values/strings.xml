@@ -92,4 +92,7 @@
     <string name="save">Save</string>
     <string name="default_config_updated">default config updated.</string>
     <string name="default_config_cannot_delete">can not delete default config!</string>
+    <string name="notification_permission">Notification Permission</string>
+    <string name="notification_permission_desc">For keeping a search operation running in the background, we need notification permission. If you deny it, the process will be killed after closing the app or even if the screen goes off !</string>
+    <string name="notification_permission_desc1">C\'mon, I swear you\'re gonna need this, but by the time you realize it, it\'ll be too late. Think about it again and then make a damn decision.</string>
 </resources>

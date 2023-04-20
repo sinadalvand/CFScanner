@@ -15,6 +15,7 @@ import ir.filternet.cfscanner.repository.ConnectionRepository
 import ir.filternet.cfscanner.repository.ISPRepository
 import ir.filternet.cfscanner.repository.ScanRepository
 import ir.filternet.cfscanner.scanner.CFScanner
+import ir.filternet.cfscanner.utils.isNotificationEnabled
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -93,7 +94,7 @@ class CloudScannerService : Service(),
                 runBlocking {
                     saveConnections(it)
                 }
-            },{
+            }, {
                 Timber.d("On Connection Flow:" + it.message)
             })
 
@@ -105,7 +106,7 @@ class CloudScannerService : Service(),
                 runBlocking {
                     saveProgress(it.lastOrNull())
                 }
-            },{
+            }, {
                 Timber.d("On Progress Flow:" + it.message)
             })
     }
@@ -195,7 +196,7 @@ class CloudScannerService : Service(),
         Timber.d("CloudScannerService startScanner")
         launch {
             isp?.let {
-                val scanSettings = tinyStorage.scanSettings?:ScanSettings()
+                val scanSettings = tinyStorage.scanSettings ?: ScanSettings()
                 val scan = scanRepository.createScan(config, it)
                 cfScanner.startScan(
                     scan, CFScanner.ScanOptions(
@@ -271,7 +272,9 @@ class CloudScannerService : Service(),
 
     override fun onScanStart(scan: Scan, options: CFScanner.ScanOptions) {
         Timber.d("CloudScannerService onScanStart: $scan")
-        startForeground(NOTIFICATION_ID, notifManager.getScanStartedNotification())
+        if (isNotificationEnabled()) {
+            startForeground(NOTIFICATION_ID, notifManager.getScanStartedNotification())
+        }
         setServiceStatus(ServiceStatus.Scanning(scan))
     }
 

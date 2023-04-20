@@ -17,6 +17,7 @@ import ir.filternet.cfscanner.model.ScanButtonState
 import ir.filternet.cfscanner.service.CloudScannerService
 import ir.filternet.cfscanner.ui.common.ScanningDetailsView
 import ir.filternet.cfscanner.ui.page.main.scan.component.*
+import ir.filternet.cfscanner.utils.isNotificationEnabled
 import ir.filternet.cfscanner.utils.parseToCommonName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -60,7 +61,6 @@ fun ScanScreen(
     val loading = state.loading
     val buttonState = state.buttonState
     val scanning = state.buttonState is ScanButtonState.Scanning
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -132,4 +132,21 @@ fun ScanScreen(
             { onEventSent(ScanContract.Event.DeleteConfig(it)) },
             { configEdit = null }
         )
+
+
+    /* show notification permission Dialog */
+    var showPermissionDialog by remember { mutableStateOf(false) }
+
+    if (showPermissionDialog)
+        NotificationPermissionRequest {
+            showPermissionDialog = false
+        }
+
+    LaunchedEffect(Unit) {
+        if (!context.isNotificationEnabled()) {
+            showPermissionDialog = true
+        }
+    }
+    /* end show notification permission Dialog */
+
 }

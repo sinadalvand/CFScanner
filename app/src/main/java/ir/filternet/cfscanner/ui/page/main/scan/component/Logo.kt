@@ -1,13 +1,11 @@
 package ir.filternet.cfscanner.ui.page.main.scan.component
 
-import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,11 +13,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import ir.filternet.cfscanner.R
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CloudLogo(loading: Boolean = false,click: () -> Unit = {}) {
     val infinitAnim = rememberInfiniteTransition()
@@ -30,7 +26,7 @@ fun CloudLogo(loading: Boolean = false,click: () -> Unit = {}) {
         )
     )
 
-    val notifPermissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
 
     BoxWithConstraints(
         Modifier
@@ -68,7 +64,4 @@ fun CloudLogo(loading: Boolean = false,click: () -> Unit = {}) {
         }
     }
 
-    LaunchedEffect(Unit){
-        notifPermissionState.launchPermissionRequest()
-    }
 }

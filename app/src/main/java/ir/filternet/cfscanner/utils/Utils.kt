@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
+import androidx.core.app.NotificationManagerCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -19,6 +20,10 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
+
+fun Context.isNotificationEnabled():Boolean{
+   return NotificationManagerCompat.from(this).areNotificationsEnabled()
+}
 
 fun extractValidAddress(text: String):List<String> {
     val lineItem = text.split(Regex("[,\\n]")).filter { it.isNotEmpty() }
