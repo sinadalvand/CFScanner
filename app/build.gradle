@@ -219,6 +219,7 @@ dependencies {
     implementation 'com.yandex.android:mobmetricalib:5.3.0'
     implementation 'org.jsoup:jsoup:1.11.1'
     implementation 'com.github.iambaljeet:RemoteLogger:1.0'
+    implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.4'
 }
 
 appmetrica {

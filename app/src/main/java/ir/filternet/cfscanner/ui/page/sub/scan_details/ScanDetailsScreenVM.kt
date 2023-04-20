@@ -18,7 +18,10 @@ import javax.inject.Inject
 class ScanDetailsScreenVM @Inject constructor(
     private val connectionRepository: ConnectionRepository,
     private val scanRepository: ScanRepository,
-) : BaseViewModel<ScanDetailsContract.Event, ScanDetailsContract.State, ScanDetailsContract.Effect>(), ServiceConnection, CloudSpeedService.CloudSpeedService {
+) : BaseViewModel<ScanDetailsContract.Event, ScanDetailsContract.State, ScanDetailsContract.Effect>(),
+    ServiceConnection,
+    CloudSpeedService.CloudSpeedService,
+    CloudScannerService.CloudScannerServiceListener {
 
     private var scannerBinder: CloudScannerService.CloudScannerServiceBinder? = null
     private var speedBinder: CloudSpeedService.CloudSpeedServiceBinder? = null
@@ -52,6 +55,9 @@ class ScanDetailsScreenVM @Inject constructor(
             ScanDetailsContract.Event.StopSortAllBySpeed -> {
                 speedBinder?.stopCheck()
             }
+            ScanDetailsContract.Event.StopScan -> {
+                scannerBinder?.pauseScan()
+            }
         }
     }
 
@@ -63,6 +69,7 @@ class ScanDetailsScreenVM @Inject constructor(
             connectionRepository.deleteByScanID(it)
             scanRepository.deleteScan(it)
         }
+        scannerBinder?.removeServiceListener()
         speedBinder?.removeListener()
         speedBinder?.stopCheck()
         setState {
@@ -72,6 +79,7 @@ class ScanDetailsScreenVM @Inject constructor(
     }
 
     override fun onCleared() {
+        scannerBinder?.removeServiceListener()
         speedBinder?.removeListener()
         Timber.d("DetailsScanScreenVM onCleared")
         super.onCleared()
@@ -117,17 +125,8 @@ class ScanDetailsScreenVM @Inject constructor(
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         when {
             name?.shortClassName?.contains("CloudScannerService") == true -> {
-
                 scannerBinder = service as CloudScannerService.CloudScannerServiceBinder
-                val scanning = scannerBinder?.getServiceStatus() is CloudScannerService.ServiceStatus.Scanning
-                val deletable = scannerBinder?.getServiceStatus()?.let { !(it is CloudScannerService.ServiceStatus.Scanning && it.scan.uid == this.scanID) } ?: true
-
-                setState {
-                    copy(
-                        scanning = scanning,
-                        deleteable = deletable
-                    )
-                }
+                scannerBinder?.setServiceListener(this)
             }
             name?.shortClassName?.contains("CloudSpeedService") == true -> {
                 speedBinder = service as CloudSpeedService.CloudSpeedServiceBinder
@@ -173,6 +172,19 @@ class ScanDetailsScreenVM @Inject constructor(
         }
 
 
+    }
+
+    override fun onServiceStatusChanged(status: CloudScannerService.ServiceStatus?) {
+
+        val scanning = status is CloudScannerService.ServiceStatus.Scanning
+        val deletable = status?.let { !(it is CloudScannerService.ServiceStatus.Scanning && it.scan.uid == this.scanID) } ?: true
+
+        setState {
+            copy(
+                scanning = scanning,
+                deleteable = deletable
+            )
+        }
     }
 
 

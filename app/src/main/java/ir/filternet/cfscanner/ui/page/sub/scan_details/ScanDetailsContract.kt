@@ -15,6 +15,7 @@ class ScanDetailsContract {
         object StopSortAllBySpeed : Event()
         data class UpdateSpeed(val connection: Connection) : Event()
         object ResumeScan : Event()
+        object StopScan : Event()
         object DeleteScan : Event()
     }
 

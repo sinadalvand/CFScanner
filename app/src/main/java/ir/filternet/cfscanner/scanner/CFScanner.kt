@@ -316,10 +316,19 @@ class CFScanner @Inject constructor(
         logger.add(Log(ip, context.getString(R.string.v2ray_cooldown,ip), STATUS.INPROGRESS))
         delay(2000)
         val delay = client.measureDelay()
-        val speed = downloadTest(ports.toInt())
-        if (client.isRunning()) {
-            client.disconnect()
+
+        try {
+            val speed = downloadTest(ports)
+
+            if (client.isRunning()) {
+                client.disconnect()
+            }
+
+        }catch (e:Exception){
+            e.printStackTrace()
+            logger.add(Log(ip, context.getString(R.string.v2ray_failed,ip), STATUS.FAILED))
         }
+
 
         if (delay < 0) {
             logger.add(Log(ip, context.getString(R.string.v2ray_failed,ip), STATUS.FAILED))

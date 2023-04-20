@@ -18,30 +18,56 @@ import ir.filternet.cfscanner.ui.theme.Green
 import ir.filternet.cfscanner.ui.theme.Red
 
 @Composable
-fun ActionCell(disableResume:Boolean = false , disableDelete:Boolean = false ,resume:()->Unit = {} ,delete: () -> Unit = {}) {
+fun ActionCell(disableResume: Boolean = false, disableDelete: Boolean = false, resume: () -> Unit = {}, stop: () -> Unit = {}, delete: () -> Unit = {}) {
     Spacer(modifier = Modifier.height(20.dp))
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Row(Modifier.fillMaxWidth(0.8f)) {
+
+            val buttonText = when {
+                disableResume && disableDelete -> stringResource(R.string.stop_scan)
+                else -> stringResource(R.string.resume_scan)
+            }
+
+            val enabled = when {
+                disableResume && disableDelete -> true
+                !disableResume -> true
+                else -> false
+            }
+
+            val color = when {
+                disableResume && disableDelete -> Red
+                !disableResume -> Green
+                else -> Gray
+            }
+
             Card(
                 Modifier
                     .weight(1f)
                     .height(45.dp),
-                backgroundColor = if(disableResume) Gray else Green
+                backgroundColor = color
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clickable(!disableResume) { resume() }, contentAlignment = Alignment.Center
+                        .clickable(enabled) {
+                            if (disableResume && disableDelete) {
+                                stop()
+                            } else {
+                                resume()
+                            }
+
+                        }, contentAlignment = Alignment.Center
                 ) {
-                    Text(text = stringResource(R.string.resume))
+                    Text(text = buttonText)
                 }
             }
+
 
             Spacer(modifier = Modifier.width(10.dp))
 
             Card(
                 Modifier.size(45.dp),
-                backgroundColor = if(disableDelete) Gray else Red
+                backgroundColor = if (disableDelete) Gray else Red
             ) {
                 Box(
                     modifier = Modifier.clickable(!disableDelete) { delete() }, contentAlignment = Alignment.Center

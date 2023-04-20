@@ -3,21 +3,24 @@ package ir.filternet.cfscanner.ui.page.sub.scan_details.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.valentinilk.shimmer.shimmer
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.model.ScanProgress
 
 @Composable
-fun ScanProgressCell(progress: ScanProgress) {
-    val total = if(progress.totalConnectionCount>0) progress.totalConnectionCount else 1
+fun ScanProgressCell(progress: ScanProgress, shimming: Boolean = false) {
+    val total = if (progress.totalConnectionCount > 0) progress.totalConnectionCount else 1
     val checked = (progress.checkConnectionCount / total) / 100f
     val success = (progress.successConnectionCount / total) / 100f
     Column(
@@ -26,7 +29,7 @@ fun ScanProgressCell(progress: ScanProgress) {
             .padding(horizontal = 20.dp)
             .height(IntrinsicSize.Min)
     ) {
-        Percentage(checked, success)
+        Percentage(checked, success, shimming)
         Spacer(modifier = Modifier.height(10.dp))
         PercentageDetails(progress)
     }
@@ -34,7 +37,7 @@ fun ScanProgressCell(progress: ScanProgress) {
 
 @Composable
 private fun PercentageDetails(progress: ScanProgress) {
-    val total = if(progress.totalConnectionCount>0) progress.totalConnectionCount else 1
+    val total = if (progress.totalConnectionCount > 0) progress.totalConnectionCount else 1
     val checked = (progress.checkConnectionCount / total) / 100f
     val success = (progress.successConnectionCount / total) / 100f
 
@@ -45,9 +48,11 @@ private fun PercentageDetails(progress: ScanProgress) {
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier
-                .size(10.dp)
-                .background(color, RoundedCornerShape(50)))
+            Spacer(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(color, RoundedCornerShape(50))
+            )
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -59,7 +64,7 @@ private fun PercentageDetails(progress: ScanProgress) {
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            Text(text = "$checked%", fontSize = 9.sp , color = color)
+            Text(text = "$checked%", fontSize = 9.sp, color = color)
 
         }
 
@@ -68,9 +73,11 @@ private fun PercentageDetails(progress: ScanProgress) {
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier
-                .size(10.dp)
-                .background(MaterialTheme.colors.onSurface, RoundedCornerShape(50)))
+            Spacer(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(MaterialTheme.colors.onSurface, RoundedCornerShape(50))
+            )
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -87,13 +94,15 @@ private fun PercentageDetails(progress: ScanProgress) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val color = MaterialTheme.colors.primaryVariant
-            Spacer(modifier = Modifier
-                .size(10.dp)
-                .background(color, RoundedCornerShape(50)))
+            Spacer(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(color, RoundedCornerShape(50))
+            )
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(text = stringResource(R.string.success) , fontSize = 13.sp, color = color)
+            Text(text = stringResource(R.string.success), fontSize = 13.sp, color = color)
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -101,14 +110,14 @@ private fun PercentageDetails(progress: ScanProgress) {
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            Text(text = "$success%", fontSize = 9.sp , color = color)
+            Text(text = "$success%", fontSize = 9.sp, color = color)
         }
 
     }
 }
 
 @Composable
-private fun Percentage(checked: Float = 0f, success: Float = 0f) {
+private fun Percentage(checked: Float = 0f, success: Float = 0f, shimming: Boolean = false) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,6 +130,21 @@ private fun Percentage(checked: Float = 0f, success: Float = 0f) {
                 .fillMaxSize()
                 .background(MaterialTheme.colors.onSurface, RoundedCornerShape(50))
         )
+
+        if (shimming)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmer(),
+                contentAlignment = Alignment.Center
+            ) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.primary.copy(0.6f), RoundedCornerShape(50))
+                )
+            }
+
 
         Spacer(
             modifier = Modifier

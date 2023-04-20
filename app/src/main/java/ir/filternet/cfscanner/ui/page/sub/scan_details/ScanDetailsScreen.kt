@@ -70,7 +70,7 @@ fun ScanDetailsScreen(
 
             if (scan?.progress != null)
                 item {
-                    ScanProgressCell(scan.progress)
+                    ScanProgressCell(scan.progress, (isScanning && !deleteable))
                 }
 
             if (scan != null)
@@ -78,6 +78,8 @@ fun ScanDetailsScreen(
                     ActionCell(isScanning, !deleteable, {
                         ContextCompat.startForegroundService(context, Intent(context, CloudScannerService::class.java))
                         onEventSent.invoke(ScanDetailsContract.Event.ResumeScan)
+                    }, stop = {
+                        onEventSent.invoke(ScanDetailsContract.Event.StopScan)
                     }) {
                         onEventSent.invoke(ScanDetailsContract.Event.DeleteScan)
                     }
