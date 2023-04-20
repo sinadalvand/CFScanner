@@ -5,6 +5,7 @@ import android.content.Context
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
+import com.lib.remotelogger.logutility.RemoteLoggerBuilder
 import com.yandex.metrica.ReporterConfig
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
