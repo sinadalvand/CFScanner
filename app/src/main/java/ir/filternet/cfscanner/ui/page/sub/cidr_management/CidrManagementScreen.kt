@@ -22,10 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.SIDE_EFFECTS_KEY
 import ir.filternet.cfscanner.model.CIDR
 import ir.filternet.cfscanner.ui.page.main.scan.ScanContract
@@ -132,7 +134,7 @@ fun CidrManagementScreen(
         if (!shuffleEnabled && loading.not())
             item {
                 Text(
-                    text = "Hold item to reorder",
+                    text = stringResource(R.string.hold_item_to_reorder),
                     color = Gray.copy(0.8f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Light,
@@ -176,7 +178,7 @@ private fun AutoFetch(state: Boolean, onChange: (Boolean) -> Unit = {}) {
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Auto fetch IP ranges", Modifier.weight(1f))
+            Text(text = stringResource(R.string.auto_fetch_ip_range), Modifier.weight(1f))
             Switch(
                 checked = state,
                 onCheckedChange = onChange,
@@ -189,7 +191,7 @@ private fun AutoFetch(state: Boolean, onChange: (Boolean) -> Unit = {}) {
             )
         }
 
-        Text(text = "Auto fetch IP Rages from internet before each scan.", modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
+        Text(text = stringResource(R.string.auto_fetch_ip_range_desc), modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
     }
 
 }
@@ -208,7 +210,7 @@ private fun ShuffleList(state: Boolean, onChange: (Boolean) -> Unit = {}) {
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Shuffle IP ranges", Modifier.weight(1f))
+            Text(text = stringResource(R.string.shuffle_ip_range), Modifier.weight(1f))
             Switch(
                 checked = state,
                 onCheckedChange = onChange,
@@ -221,7 +223,7 @@ private fun ShuffleList(state: Boolean, onChange: (Boolean) -> Unit = {}) {
             )
         }
 
-        Text(text = "use to shuffle ip ranges before each scan; enable this feature makes custom order disable.", modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
+        Text(text = stringResource(R.string.shuffle_ip_range_desc), modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
     }
 
 }
@@ -231,7 +233,7 @@ private fun CustomRangeImport(ips: (List<String>) -> Unit) {
     var text by remember { mutableStateOf("") }
     var inputedIpCount by remember { mutableStateOf(0) }
     Text(
-        text = "Enter IP range",
+        text = stringResource(R.string.enter_ip_range),
         modifier = Modifier.fillMaxWidth(0.9f),
     )
     Spacer(modifier = Modifier.height(4.dp))
@@ -243,13 +245,13 @@ private fun CustomRangeImport(ips: (List<String>) -> Unit) {
         },
         modifier = Modifier.fillMaxWidth(0.9f),
         colors = TextFieldDefaults.textFieldColors(unfocusedIndicatorColor = Gray),
-        placeholder = { Text(text = "e.g: 196.127.1.0/24", color = Gray.copy(0.4f)) },
+        placeholder = { Text(text = stringResource(R.string.ip_range_example), color = Gray.copy(0.4f)) },
         minLines = 1,
         maxLines = 5
     )
     Spacer(modifier = Modifier.height(4.dp))
     Text(
-        text = "for multiple IP range, use comma (,) or next line",
+        text = stringResource(R.string.for_multi_ip_enter),
         color = Gray.copy(0.4f),
         fontSize = 14.sp,
         fontWeight = FontWeight.Light,
@@ -271,7 +273,7 @@ private fun CustomRangeImport(ips: (List<String>) -> Unit) {
                 }, contentAlignment = Alignment.Center
         ) {
             val range = if (inputedIpCount > 1) "$inputedIpCount " else ""
-            Text(text = "Add ${range}IP range${if (inputedIpCount > 1) "s" else ""}", color = Color.White)
+            Text(text = stringResource(R.string.add_ip_range_button,range), color = Color.White)
         }
     }
 }

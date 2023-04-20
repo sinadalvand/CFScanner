@@ -88,7 +88,7 @@ fun NotificationPermissionRequest(dismiss: () -> Unit = {}) {
                 ) {
 
                     Text(
-                        text = "I'm in",
+                        text = stringResource(R.string.i_agree),
                         fontSize = 14.sp,
                         modifier = Modifier
                             .width(100.dp)
@@ -107,7 +107,7 @@ fun NotificationPermissionRequest(dismiss: () -> Unit = {}) {
 
 
                     Text(
-                        text = "No",
+                        text = stringResource(R.string.no),
                         fontSize = 14.sp,
                         modifier = Modifier
                             .width(80.dp)

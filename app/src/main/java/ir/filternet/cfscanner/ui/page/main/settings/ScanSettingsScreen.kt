@@ -30,6 +30,7 @@ import ir.filternet.cfscanner.BuildConfig
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.ui.page.main.history.HistoryContract
 import ir.filternet.cfscanner.utils.AppConfig
+import ir.filternet.cfscanner.utils.mirror
 import ir.filternet.cfscanner.utils.openBrowser
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
@@ -276,17 +277,21 @@ fun CidrCell(click: () -> Unit) {
                         .padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Manage CIDRs", Modifier.weight(1f))
+                    Text(text = stringResource(R.string.manage_cidrs), Modifier.weight(1f))
                 }
 
-                Text(text = "Add , Delete and reorder CIDRs.", modifier = Modifier.padding(8.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
+                Text(text = stringResource(R.string.manage_cidrs_desc), modifier = Modifier.padding(8.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
 
             }
 
-            Icon(Icons.Rounded.ArrowForwardIos, contentDescription = null,
+            Icon(
+                Icons.Rounded.ArrowForwardIos, contentDescription = null,
                 Modifier
                     .padding(8.dp)
-                    .size(20.dp), tint = MaterialTheme.colors.primary)
+                    .size(20.dp)
+                    .mirror(),
+                tint = MaterialTheme.colors.primary
+            )
         }
     }
 }

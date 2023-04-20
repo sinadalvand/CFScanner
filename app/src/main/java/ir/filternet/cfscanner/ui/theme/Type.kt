@@ -1,28 +1,26 @@
 package ir.filternet.cfscanner.ui.theme
 
 import androidx.compose.material.Typography
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.intl.Locale
+import ir.filternet.cfscanner.R
 
-// Set of Material typography styles to start with
+
+private val VazirFontFamily = FontFamily(
+    Font(R.font.vazir_regular),
+    Font(R.font.vazir_black, FontWeight.Black),
+    Font(R.font.vazir_bold, FontWeight.Bold),
+    Font(R.font.vazir_light, FontWeight.Light),
+    Font(R.font.vazir_medium, FontWeight.Medium),
+    Font(R.font.vazir_thin, FontWeight.Thin),
+)
+
+private val VazirNumberFontFamily = FontFamily(
+    Font(R.font.vazir_variable)
+)
+
 val Typography = Typography(
-    body1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    )
-    /* Other default text styles to override
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    )
-    */
+    defaultFontFamily = if (Locale.current.language == "fa") VazirFontFamily else FontFamily.Default,
 )

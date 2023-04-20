@@ -19,13 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ir.filternet.cfscanner.model.Scan
 import ir.filternet.cfscanner.model.ScanProgress
+import ir.filternet.cfscanner.utils.mirror
 import ir.filternet.cfscanner.utils.parseToCommonName
 import java.util.*
+import ir.filternet.cfscanner.R
 
 
 @Composable
@@ -74,7 +77,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
                         Spacer(modifier = Modifier.weight(1f))
 
                         Icon(Icons.Outlined.CheckCircle, contentDescription = "", Modifier.size(18.dp))
-                        Text(text = "$founded found", fontSize = 11.sp, fontWeight = FontWeight.Light, modifier = Modifier.padding(4.dp))
+                        Text(text = stringResource(id = R.string.found_item,founded), fontSize = 11.sp, fontWeight = FontWeight.Light, modifier = Modifier.padding(4.dp))
 
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -85,7 +88,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
 
             Spacer(modifier = Modifier.width(5.dp))
 
-            Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "")
+            Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "", Modifier.mirror())
         }
     }
 }

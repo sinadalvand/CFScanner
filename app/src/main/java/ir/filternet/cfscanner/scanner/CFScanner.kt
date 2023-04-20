@@ -3,6 +3,7 @@ package ir.filternet.cfscanner.scanner
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import ir.filternet.cfscanner.BuildConfig
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.model.*
 import ir.filternet.cfscanner.offline.TinyStorage
 import ir.filternet.cfscanner.repository.CIDRRepository
@@ -53,7 +54,7 @@ class CFScanner @Inject constructor(
 
             listener?.onScanStart(scan, options)
 
-            logger.add(Log("process", "Start Scan Process ..."))
+            logger.add(Log("process", context.getString(R.string.start_scan_process)))
 
             this@CFScanner.scan = scan
 
@@ -63,14 +64,14 @@ class CFScanner @Inject constructor(
     }
 
     fun stopScan(byUser: Boolean = true, reason: String = "") {
-        logger.add(Log("process", "Scan Stopping ...", STATUS.INPROGRESS))
+        logger.add(Log("process", context.getString(R.string.scan_stoping), STATUS.INPROGRESS))
         Timber.d("CFScanner: Stopped!")
         discoveryJob?.cancel()
         listener?.onScanPaused(scan!!, reason, byUser)
         if (byUser) {
-            logger.add(Log("process", "Scan stopped successfully.", STATUS.SUCCESS))
+            logger.add(Log("process", context.getString(R.string.scan_stopped_successfully), STATUS.SUCCESS))
         } else {
-            logger.add(Log("process", "Scan stopped.", STATUS.FAILED))
+            logger.add(Log("process", context.getString(R.string.scan_stopped), STATUS.FAILED))
         }
     }
 
@@ -110,19 +111,19 @@ class CFScanner @Inject constructor(
         /* ================= */
 
         /* Start Process Log */
-        logger.add(Log("worker", "$parallel workers initialized.", STATUS.SUCCESS))
+        logger.add(Log("worker", context.getString(R.string.worker_initialized,parallel), STATUS.SUCCESS))
         Timber.d("CFScanner: Start Scan by $parallel worker")
         /* ================= */
 
         if (allCIDR.isEmpty()) {
-            logger.add(Log("cidr", "Can not get CIDR list!", STATUS.FAILED))
-            logger.add(Log("cidr1", "Operation Will cancel in 5 sec ...", STATUS.FAILED))
+            logger.add(Log("cidr", context.getString(R.string.can_not_get_cidr), STATUS.FAILED))
+            logger.add(Log("cidr1", context.getString(R.string.operation_will_end_in_5_sec), STATUS.FAILED))
             delay(5000)
-            this@CFScanner.stopScan(true, "Can not get CIDR list!")
+            this@CFScanner.stopScan(true, context.getString(R.string.can_not_get_cidr))
             yield()
         }
         val ipCount = allCIDR.map { calculateUsableHostCountBySubnetMask(it.subnetMask) }.reduce { a, i -> a + i }
-        logger.add(Log("ips", "$ipCount IPs found to check.", STATUS.SUCCESS))
+        logger.add(Log("ips", context.getString(R.string.ip_found_to_check,ipCount), STATUS.SUCCESS))
 
         delay(1000)
 
@@ -152,7 +153,7 @@ class CFScanner @Inject constructor(
                 } ?: -1
 
                 /* Start Scan Log */
-                logger.add(Log(cidr.address, "Start Scan for ${cidr.address}/${cidr.subnetMask}", STATUS.INPROGRESS))
+                logger.add(Log(cidr.address, context.getString(R.string.start_scan_for,cidr.address,cidr.subnetMask), STATUS.INPROGRESS))
                 Timber.d("CFScanner: Start Scan for ${cidr.address}/${cidr.subnetMask} by $count ips")
                 /* ============== */
 
@@ -198,12 +199,12 @@ class CFScanner @Inject constructor(
                         semaphore.release()
                     }
                 }
-                logger.add(Log(cidr.address, "End of Scan for ${cidr.address}/${cidr.subnetMask}", STATUS.SUCCESS))
+                logger.add(Log(cidr.address, context.getString(R.string.end_scan_for,cidr.address,cidr.subnetMask), STATUS.SUCCESS))
             }
         }
 
         if (this.isActive) {
-            logger.add(Log("process", "Scan Finished Successfully.", STATUS.SUCCESS))
+            logger.add(Log("process", context.getString(R.string.scan_finished_successfully), STATUS.SUCCESS))
             listener?.onScanFinished(scan.copy(progress = ScanProgress(ipCount, scanned, founded)))
         }
     }
@@ -233,14 +234,14 @@ class CFScanner @Inject constructor(
     private suspend fun checkIpDelay(config: Config, address: String, port: Int = 443): Long {
         // 1. check port opening
         if (!isPortOpen(address, port, 2000)) {
-            logger.add(Log(address, "$address (Port Not Open)", STATUS.FAILED))
+            logger.add(Log(address, context.getString(R.string.port_close,address), STATUS.FAILED))
             Timber.d("CFScanner: check status for $address ==> Port $port is not Open!")
             return -1
         }
 
         // 2. check domain fronting
         if (!checkDomainFronting(address)) {
-            logger.add(Log(address, "$address (Fronting Error)", STATUS.FAILED))
+            logger.add(Log(address, context.getString(R.string.fronting_error,address), STATUS.FAILED))
             Timber.d("CFScanner: check status for $address ==> Fronting not Ok!")
             return -1
         }
@@ -312,7 +313,7 @@ class CFScanner @Inject constructor(
         val conf = v2rarUtils.createServerConfig(config)?.fullConfig?.getByCustomVnextOutbound(port, ip)?.getByCustomInbound(ports)?.toPrettyPrinting()!!
         val client = V2RayClient(context, conf)
         client.connect("$ip:$port")
-        logger.add(Log(ip, "$ip (V2ray Cooldown)", STATUS.INPROGRESS))
+        logger.add(Log(ip, context.getString(R.string.v2ray_cooldown,ip), STATUS.INPROGRESS))
         delay(2000)
         val delay = client.measureDelay()
         val speed = downloadTest(ports.toInt())
@@ -321,7 +322,7 @@ class CFScanner @Inject constructor(
         }
 
         if (delay < 0) {
-            logger.add(Log(ip, "$ip (V2ray Failed!)", STATUS.FAILED))
+            logger.add(Log(ip, context.getString(R.string.v2ray_failed,ip), STATUS.FAILED))
         }
         return delay
     }

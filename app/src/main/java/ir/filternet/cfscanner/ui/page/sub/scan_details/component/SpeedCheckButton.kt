@@ -99,7 +99,7 @@ fun SpeedCheckButton(speedStatus: CloudSpeedService.SpeedServiceStatus, startSor
             modifier = Modifier.fillMaxSize()
         ) {
             Text(
-                text = "Hold button to stop speed checking process",
+                text = stringResource(R.string.hold_to_stop_process),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Thin,
                 modifier = Modifier

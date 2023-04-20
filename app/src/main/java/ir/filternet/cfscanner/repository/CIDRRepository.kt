@@ -1,5 +1,8 @@
 package ir.filternet.cfscanner.repository
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.BasicRepository
 import ir.filternet.cfscanner.db.entity.CidrEntity
 import ir.filternet.cfscanner.mapper.mapToCidr
@@ -20,6 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CIDRRepository @Inject constructor(
+    @ApplicationContext val context:Context,
     val logger: CFSLogger,
 ) : BasicRepository() {
 
@@ -35,11 +39,11 @@ class CIDRRepository @Inject constructor(
 
     suspend fun getAllCIDR(networkFetch:Boolean = true): List<CIDR> {
         if (isDeprecated() && networkFetch) {
-            logger.add(Log("cidrs", "getting CIDRS from network ...", STATUS.INPROGRESS))
+            logger.add(Log("cidrs", context.getString(R.string.get_cidr_from_network), STATUS.INPROGRESS))
             getDataFromNetwork()
-            logger.add(Log("cidrs", "CIDRS from network fetched.", STATUS.SUCCESS))
+            logger.add(Log("cidrs", context.getString(R.string.cidr_fetched_from_netwoek), STATUS.SUCCESS))
         } else {
-            logger.add(Log("cidrs", "CIDRS from cache.", STATUS.SUCCESS))
+            logger.add(Log("cidrs", context.getString(R.string.cidr_fetch_from_cache), STATUS.SUCCESS))
         }
         return cidrDao.getAll().map { it.mapToCidr() }
     }
@@ -74,7 +78,7 @@ class CIDRRepository @Inject constructor(
             saveAllCIDR(result)
             saveLastUpdate()
         } catch (e: Exception) {
-            logger.add(Log("cidrs", "CIDRS fetching failed. retry ...", STATUS.FAILED))
+            logger.add(Log("cidrs", context.getString(R.string.cidr_fetch_failed), STATUS.FAILED))
             delay(4000)
             getDataFromNetwork()
         }

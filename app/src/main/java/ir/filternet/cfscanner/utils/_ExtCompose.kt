@@ -5,12 +5,27 @@ import android.content.Intent
 import android.content.ServiceConnection
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.BeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import ir.filternet.cfscanner.service.CloudSpeedService
 import timber.log.Timber
+
+@Stable
+fun Modifier.mirror(): Modifier = composed {
+    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+        this.scale(scaleX = -1f, scaleY = 1f)
+    else
+        this
+}
 
 @Composable
 fun BindService(serviceClass: Class<*>,connection: ServiceConnection){

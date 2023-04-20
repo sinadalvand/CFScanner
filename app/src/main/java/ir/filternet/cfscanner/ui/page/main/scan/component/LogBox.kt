@@ -1,6 +1,7 @@
 package ir.filternet.cfscanner.ui.page.main.scan.component
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,12 +13,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.OfflineBolt
+import androidx.compose.material.icons.rounded.GroupWork
 import androidx.compose.material.icons.rounded.TripOrigin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -66,9 +69,9 @@ fun LogBox(modifier: Modifier = Modifier, log: List<Log>? = emptyList()) {
                 .background(Brush.verticalGradient(0f to Color.Transparent, 1f to MaterialTheme.colors.background))
         )
 
-        LaunchedEffect(log){
-            val index = if(log?.lastIndex == null ||log.lastIndex<0 ) 0 else log.lastIndex
-            state.scrollToItem(index,0)
+        LaunchedEffect(log) {
+            val index = if (log?.lastIndex == null || log.lastIndex < 0) 0 else log.lastIndex
+            state.scrollToItem(index, 0)
         }
     }
 
@@ -78,7 +81,7 @@ fun LogBox(modifier: Modifier = Modifier, log: List<Log>? = emptyList()) {
 fun LogItem(log: Log) {
     val icon = when (log.status) {
         IDLE -> Icons.Rounded.TripOrigin
-        INPROGRESS -> Icons.Rounded.OfflineBolt //Icons.Rounded.Adjust
+        INPROGRESS -> Icons.Rounded.GroupWork  // Icons.Rounded.OfflineBolt //Icons.Rounded.Adjust
         FAILED -> Icons.Rounded.Cancel
         SUCCESS -> Icons.Rounded.CheckCircle
     }
@@ -90,8 +93,20 @@ fun LogItem(log: Log) {
         SUCCESS -> Green
     }
 
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 360f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing)
+        )
+    )
+
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.animateContentSize()) {
-        Image(icon, contentDescription = "", Modifier.size(15.dp), colorFilter = ColorFilter.tint(color))
+        Image(icon, contentDescription = "",
+            Modifier
+                .size(15.dp)
+                .rotate(if (log.status == INPROGRESS) angle else 0f), colorFilter = ColorFilter.tint(color))
         Text(text = log.text, Modifier.padding(horizontal = 4.dp), fontSize = 14.sp, color = color)
     }
 }

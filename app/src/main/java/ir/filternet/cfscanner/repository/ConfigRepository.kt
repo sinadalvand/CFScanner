@@ -1,5 +1,8 @@
 package ir.filternet.cfscanner.repository
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.BasicRepository
 import ir.filternet.cfscanner.db.entity.ConfigEntity
 import ir.filternet.cfscanner.mapper.mapToConfig
@@ -22,6 +25,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ConfigRepository @Inject constructor(
+    @ApplicationContext private val context:Context,
     private val retrofit: OkHttpClient,
     private val scanRepository: ScanRepository,
     private val v2rayUtils: V2rayConfigUtil,
@@ -83,7 +87,7 @@ class ConfigRepository @Inject constructor(
                 .replace("HOSTHOST", host ?: "")
                 .replace("ENDPOINTENDPOINT", path?: "")
                 .replace("RANDOMHOST", serverName ?: "")
-            Config(config, "Default", uid = 1324)
+            Config(config, context.getString(R.string.default_config), uid = 1324)
         } catch (e: Exception) {
             println("An error occurred: " + e.message)
             e.printStackTrace()
