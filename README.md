@@ -5,11 +5,6 @@
 <h1 align="center">Android Cloudflare Scanner</h1>
 <p align="center">This Android application allows users to scan Cloudflare IPs using a real V2ray client by inputting their config details and evaluating each address based on download speed. This enables them to identify the best IP addresses for optimal connection. The app provides a user-friendly interface for users to easily navigate and select their preferred IP addresses, as well as the ability to save results for later use.</p>
 
-<h6 align="center">
-<img src="https://img.shields.io/github/v/release/0ut0fCode/CFScanner-Android" height="22" valign="middle">&nbsp;&nbsp;
-<img src="https://img.shields.io/github/downloads/0ut0fCode/CFScanner-Android/total" height="22" valign="middle">&nbsp;&nbsp;
-<img src="https://img.shields.io/github/license/0ut0fCode/CFScanner-Android?style=flat-square" height="22" valign="middle">&nbsp;&nbsp;
-</h6>
 
 ## Contents
 
