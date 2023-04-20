@@ -20,7 +20,7 @@
 ## 📱 Installation
 
 <pre>
-You can download application APK from <a href="https://github.com/0ut0fCode/CFScanner-Android/releases">release section</a> in right side of page 
+You can download application APK from <a href="https://github.com/MortezaBashsiz/CFScanner/releases">release section</a> in right side of page 
 
 If you are confused about which version to download, you should choose
 APk by the name of CFScanner-X.X.X-release-all.apk
@@ -149,11 +149,12 @@ fronting_address = "your address without https"
 ## ⚒️ Upcoming Features
 
 - [ ] Implement inner VPN service
-- [x] Resume Old Scan
 - [ ] Add Auto Switch Feature to VPN
+- [x] Resume Old Scan
+- [X] Random CIDR picking
+- [X] Persian Language Support
+- [ ] Chinese Language Support
 - [ ] Sync Best IPs for each ISP
-- [ ] Random CIDR picking
-- [ ] Persian/Chinese Language Support
 
 ## 🤝 Contribution Guidelines
 
