@@ -17,10 +17,6 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            delay(5000)
-            0/0
-        }
         setContent {
             CFScannerTheme {
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
