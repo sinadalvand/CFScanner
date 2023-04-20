@@ -226,7 +226,9 @@ class CloudScannerService : Service(),
 
     private fun stopScan() {
         Timber.d("CloudScannerService stopScan")
-        cfScanner.stopScan(true)
+        cfScanner?.apply {
+            stopScan(true)
+        }
     }
 
     /**
