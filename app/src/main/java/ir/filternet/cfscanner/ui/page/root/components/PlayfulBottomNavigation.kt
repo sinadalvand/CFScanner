@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -34,10 +35,18 @@ fun PlayfulBottomNavigation(
     unselectedColor: Color = Color.White,
     selectedColor: Color = MaterialTheme.colors.primary,
     indicatorColor: Color = MaterialTheme.colors.primary,
-    backgroundColor:Color = MaterialTheme.colors.primary,
-    navigate: (index: Int) -> Unit
+    backgroundColor: Color = MaterialTheme.colors.primary,
+    navigate: (index: Int) -> Unit,
 ) {
-    Box(modifier = modifier.background(backgroundColor, RoundedCornerShape(topStartPercent = 15, topEndPercent = 15)).padding(horizontal = 16.dp).height(65.dp)) {
+    Box(modifier =
+    modifier
+        .background(backgroundColor, RoundedCornerShape(topStartPercent = 15, topEndPercent = 15))
+        .padding(horizontal = 16.dp)
+        .height(65.dp)
+        .clickable(remember { MutableInteractionSource() }, null) {
+
+        }
+    ) {
         val ANIM_DURATION = duration
         var currentIndex by remember(index) { mutableStateOf(index * 1f) }
         var show by rememberSaveable { mutableStateOf(true) }
@@ -59,7 +68,7 @@ fun PlayfulBottomNavigation(
                                 navigate(it)
                             }
                             .padding(6.dp),
-                        tint = if(it == currentIndex.roundToInt()) selectedColor else unselectedColor
+                        tint = if (it == currentIndex.roundToInt()) selectedColor else unselectedColor
                     )
                 }
             }
@@ -76,17 +85,15 @@ fun PlayfulBottomNavigation(
             }
 
             layout(constraints.maxWidth, constraints.maxHeight) {
-                var space = spacer+1
+                var space = spacer + 1
                 children.forEachIndexed { i, d ->
                     val h = ((maxH / 2) + ((maxH) * (1 - ((upcome * (leverage(i, 0.4f, 0.1f, children.size) * 10)).coerceIn(0f, 1f))))) - (d.height / 2)
                     d.place(space.toInt(), h.toInt())
-                    if(i == children.size-1) return@layout
+                    if (i == children.size - 1) return@layout
                     space += (d.width.toFloat() + (spacer * 2f))
                 }
             }
         }
-
-
 
 
         val anim by animateFloatAsState(targetValue = currentIndex, spring())
@@ -108,7 +115,7 @@ fun PlayfulBottomNavigation(
         }
 
         LaunchedEffect(show) {
-            if(show){
+            if (show) {
                 delay(500)
                 show = false
             }
