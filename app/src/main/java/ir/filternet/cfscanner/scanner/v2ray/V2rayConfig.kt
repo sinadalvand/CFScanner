@@ -542,6 +542,16 @@ data class V2rayConfig(
         }
     }
 
+    fun getByCustomVnextOutbound(address: String): V2rayConfig {
+        return this.apply {
+            outbounds.filter { it.tag == "proxy" }.forEach {
+                it.settings?.vnext?.forEach {
+                    it.address = address
+                }
+            }
+        }
+    }
+
     fun isWSConnection():Boolean{
         outbounds.filter { it.tag == "proxy" }.forEach {
             if(it.streamSettings?.network?.contains("ws",false)==true){
@@ -550,6 +560,12 @@ data class V2rayConfig(
         }
         return false
     }
+
+    fun getProtocolType():EConfigType{
+        val protocol = outbounds.first().protocol
+        return EConfigType.fromString(protocol.lowercase())?: EConfigType.CUSTOM
+    }
+
 
     fun isVmessVlessConnection():Boolean{
         outbounds.filter { it.tag == "proxy" }.forEach {

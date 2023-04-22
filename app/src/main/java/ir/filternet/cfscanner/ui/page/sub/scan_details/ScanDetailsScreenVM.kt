@@ -6,6 +6,7 @@ import android.os.IBinder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.filternet.cfscanner.contracts.BaseViewModel
 import ir.filternet.cfscanner.model.Connection
+import ir.filternet.cfscanner.repository.ConfigRepository
 import ir.filternet.cfscanner.repository.ConnectionRepository
 import ir.filternet.cfscanner.repository.ScanRepository
 import ir.filternet.cfscanner.service.CloudScannerService
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class ScanDetailsScreenVM @Inject constructor(
     private val connectionRepository: ConnectionRepository,
     private val scanRepository: ScanRepository,
+    private val configRepository: ConfigRepository,
 ) : BaseViewModel<ScanDetailsContract.Event, ScanDetailsContract.State, ScanDetailsContract.Effect>(),
     ServiceConnection,
     CloudSpeedService.CloudSpeedService,
@@ -43,18 +45,23 @@ class ScanDetailsScreenVM @Inject constructor(
                     scannerBinder?.startScan(it)
                 }
             }
+
             is ScanDetailsContract.Event.UpdateSpeed -> {
                 speedBinder?.startCheck(listOf(event.connection))
             }
+
             ScanDetailsContract.Event.DeleteScan -> {
                 deleteScanHistory()
             }
+
             ScanDetailsContract.Event.StartSortAllBySpeed -> {
                 speedBinder?.startCheck(viewState.value.connections)
             }
+
             ScanDetailsContract.Event.StopSortAllBySpeed -> {
                 speedBinder?.stopCheck()
             }
+
             ScanDetailsContract.Event.StopScan -> {
                 scannerBinder?.pauseScan()
             }
@@ -89,7 +96,7 @@ class ScanDetailsScreenVM @Inject constructor(
         setState { copy(loading = true) }
         val scan = scanRepository.getScanById(scanID)
 
-        if(scan==null){
+        if (scan == null) {
             setEffect {
                 ScanDetailsContract.Effect.Messenger.Toast("Scan Not Found !")
             }
@@ -113,6 +120,12 @@ class ScanDetailsScreenVM @Inject constructor(
 
     }
 
+    // need to share for different configs
+    private fun requestConfigs() = vmScope {
+        val configs = configRepository.getAllConfig()
+        setState { copy(configs = configs) }
+    }
+
     private fun setConnectionBySort(list: List<Connection>) {
         setState { copy(connections = list.sortedByDescending { it.speed }) }
     }
@@ -120,6 +133,7 @@ class ScanDetailsScreenVM @Inject constructor(
     fun setScan(scanID: Int) {
         this.scanID = scanID
         requestScanDetails()
+        requestConfigs()
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -128,6 +142,7 @@ class ScanDetailsScreenVM @Inject constructor(
                 scannerBinder = service as CloudScannerService.CloudScannerServiceBinder
                 scannerBinder?.setServiceListener(this)
             }
+
             name?.shortClassName?.contains("CloudSpeedService") == true -> {
                 speedBinder = service as CloudSpeedService.CloudSpeedServiceBinder
                 speedBinder?.setListener(this)
@@ -140,6 +155,7 @@ class ScanDetailsScreenVM @Inject constructor(
             name?.shortClassName?.contains("CloudScannerService") == true -> {
                 scannerBinder = null
             }
+
             name?.shortClassName?.contains("CloudSpeedService") == true -> {
                 speedBinder = null
             }
@@ -166,7 +182,7 @@ class ScanDetailsScreenVM @Inject constructor(
             setState { copy(speedStatus = status) }
 
         // make sure all item updating status is Idle
-        if(status is CloudSpeedService.SpeedServiceStatus.Idle){
+        if (status is CloudSpeedService.SpeedServiceStatus.Idle) {
             val connections = viewState.value.connections.map { it.copy(updating = false) }.toMutableList()
             setConnectionBySort(connections)
         }

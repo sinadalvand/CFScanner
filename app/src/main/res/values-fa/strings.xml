@@ -132,4 +132,5 @@
     <string name="cidr_fetch_failed">خطا در دریافت CIDR ها. تلاش مجدد ... </string>
     <string name="scan_manager">مدیریت اسکن</string>
     <string name="no_internet_connection">اینترنت متصل نیست !</string>
+    <string name="config_copied_to_clipboard">کانفیگ کپی شد.</string>
 </resources>

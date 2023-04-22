@@ -53,6 +53,7 @@ fun ScanDetailsScreen(
     val loading = state.loading
     val scan = state.scan
     val connections = state.connections
+    val configs = state.configs
     val isScanning = state.scanning
     val deleteable = state.deleteable
     val speedStatus = state.speedStatus
@@ -119,7 +120,7 @@ fun ScanDetailsScreen(
 
 
             items(connections, { it.ip }) {
-                ConnectionCell(Modifier.animateItemPlacement(), it, speedChecking) {
+                ConnectionCell(Modifier.animateItemPlacement(), it, speedChecking,configs) {
                     onEventSent.invoke(ScanDetailsContract.Event.UpdateSpeed(it))
                 }
             }

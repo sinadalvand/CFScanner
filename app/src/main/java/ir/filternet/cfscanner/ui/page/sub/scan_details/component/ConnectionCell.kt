@@ -3,8 +3,12 @@ package ir.filternet.cfscanner.ui.page.sub.scan_details.component
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,6 +18,9 @@ import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,13 +29,25 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ir.filternet.cfscanner.R
+import ir.filternet.cfscanner.model.Config
 import ir.filternet.cfscanner.model.Connection
+import ir.filternet.cfscanner.utils.applyNewAddress
+import ir.filternet.cfscanner.utils.convertToServerConfig
+import ir.filternet.cfscanner.utils.share2Clipboard
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ConnectionCell(modifier:Modifier = Modifier , connection: Connection, speedChecking: Boolean = false, update: () -> Unit = {}) {
+fun ConnectionCell(
+    modifier: Modifier = Modifier,
+    connection: Connection,
+    speedChecking: Boolean = false,
+    configs: List<Config> = emptyList(),
+    update: () -> Unit = {},
+) {
 
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
@@ -96,16 +115,50 @@ fun ConnectionCell(modifier:Modifier = Modifier , connection: Connection, speedC
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Icon(Icons.Rounded.CopyAll, contentDescription = "Copy", modifier = Modifier
-                .clip(RoundedCornerShape(50))
-                .clickable {
-                    Toast
-                        .makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT)
-                        .show()
-                    clipboard.setText(AnnotatedString(connection.ip))
-                }
-            )
+            Box(contentAlignment = Alignment.Center) {
+                var expanded by remember { mutableStateOf(false) }
 
+                Icon(
+                    Icons.Rounded.CopyAll, contentDescription = "Copy", modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .combinedClickable(onClick = {
+                            val configID = connection.scan?.config?.uid
+                            val config = configs
+                                .find { it.uid == configID }
+                                ?.convertToServerConfig()
+                                ?.applyNewAddress(connection.ip)
+                            if (config != null) {
+                                Toast
+                                    .makeText(context, context.getString(R.string.config_copied_to_clipboard), Toast.LENGTH_SHORT)
+                                    .show()
+                                share2Clipboard(context, config)
+                                return@combinedClickable
+                            } else {
+                                Toast
+                                    .makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT)
+                                    .show()
+                                clipboard.setText(AnnotatedString(connection.ip))
+                                return@combinedClickable
+                            }
+                        }, onLongClick = {
+                            if (configs.size > 1)
+                                expanded = true
+                        })
+                )
+
+                ConfigDropDown(
+                    expanded, configs,
+                    onSelect = {
+                        val configID = connection.scan?.config?.uid
+                        val config = it.convertToServerConfig().applyNewAddress(connection.ip)?.let {
+                            share2Clipboard(context, it)
+                            Toast.makeText(context, context.getString(R.string.config_copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                        }
+                    }, onDismiss = {
+                        expanded = false
+                    }
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
         }
 

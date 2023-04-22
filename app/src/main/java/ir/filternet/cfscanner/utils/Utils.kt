@@ -4,12 +4,16 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.text.TextUtils
 import android.util.Base64
 import androidx.core.app.NotificationManagerCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.QRCodeWriter
+import ir.filternet.cfscanner.model.Config
+import ir.filternet.cfscanner.scanner.v2ray.EConfigType
+import ir.filternet.cfscanner.scanner.v2ray.ServerConfig
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -21,16 +25,56 @@ import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
 
-fun Context.isNotificationEnabled():Boolean{
-   return NotificationManagerCompat.from(this).areNotificationsEnabled()
+fun ServerConfig.applyNewAddress(address: String): ServerConfig? {
+    val newOutbeans = this.fullConfig?.getByCustomVnextOutbound(address)?.outbounds?.firstOrNull() ?: return null
+    return this.copy(remarks = remarks.let { "$it|$address" },outboundBean = newOutbeans)
 }
 
-fun extractValidAddress(text: String):List<String> {
+fun Config.convertToServerConfig(): ServerConfig {
+    val type = v2rayConfig?.getProtocolType() ?: EConfigType.CUSTOM
+    return ServerConfig(configType = type, remarks = name, outboundBean = v2rayConfig?.outbounds?.firstOrNull(), fullConfig = v2rayConfig)
+}
+
+fun share2Clipboard(context: Context, config: ServerConfig): Int {
+    try {
+        val conf = config.getShareableConfig()
+        if (TextUtils.isEmpty(conf)) {
+            return -1
+        }
+
+        setClipboard(context, conf)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return -1
+    }
+    return 0
+}
+
+fun share2QRCode(config: Config): Bitmap? {
+    try {
+        val conf = config.convertToServerConfig().getShareableConfig()
+        if (TextUtils.isEmpty(conf)) {
+            return null
+        }
+        return QRCodeDecoder.createQRCode(conf)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
+    }
+}
+
+fun Context.isNotificationEnabled(): Boolean {
+    return NotificationManagerCompat.from(this).areNotificationsEnabled()
+}
+
+fun extractValidAddress(text: String): List<String> {
     val lineItem = text.split(Regex("[,\\n]")).filter { it.isNotEmpty() }
 //    val commaItem = text.split(",").filter { it.isNotEmpty() }
     val items = mutableListOf<String>()
         .apply { addAll(lineItem);/*addAll(commaItem);*/ }
-        .map { it.replace("\n","").replace(",","") }
+        .map { it.replace("\n", "").replace(",", "") }
         .toSet().toMutableList()
 
     return items.map { it.trim() }.filter {
@@ -56,7 +100,7 @@ fun getFromGithub(url: String): String {
         }
     }
 //    Timber.d("Elements: $itemText")
-    return itemText.joinToString (separator = "\n"){ it }
+    return itemText.joinToString(separator = "\n") { it }
 }
 
 fun generateString(): String {
@@ -308,6 +352,18 @@ fun urlEncode(url: String): String {
         e.printStackTrace()
         url
     }
+}
+
+fun getIpv6Address(address: String): String {
+    return if (isIpv6Address(address)) {
+        String.format("[%s]", address)
+    } else {
+        address
+    }
+}
+
+fun removeWhiteSpace(str: String?): String? {
+    return str?.replace(" ", "")
 }
 
 fun fixIllegalUrl(str: String): String {

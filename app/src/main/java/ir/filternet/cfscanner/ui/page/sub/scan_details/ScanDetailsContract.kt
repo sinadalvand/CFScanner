@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import ir.filternet.cfscanner.contracts.ViewEvent
 import ir.filternet.cfscanner.contracts.ViewSideEffect
 import ir.filternet.cfscanner.contracts.ViewState
+import ir.filternet.cfscanner.model.Config
 import ir.filternet.cfscanner.model.Connection
 import ir.filternet.cfscanner.model.Scan
 import ir.filternet.cfscanner.service.CloudSpeedService
@@ -23,6 +24,7 @@ class ScanDetailsContract {
         val loading: Boolean = false,
         val scan: Scan? = null,
         val connections: List<Connection> = emptyList(),
+        val configs: List<Config> = emptyList(),
         val scanning: Boolean = true,
         val deleteable:Boolean = true,
         val speedStatus:CloudSpeedService.SpeedServiceStatus = CloudSpeedService.SpeedServiceStatus.Disable

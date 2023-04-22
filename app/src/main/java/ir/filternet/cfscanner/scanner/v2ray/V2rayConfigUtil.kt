@@ -8,6 +8,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import ir.filternet.cfscanner.model.Settings
 import ir.filternet.cfscanner.utils.*
 import java.net.URI
+import java.net.URLDecoder
+import java.net.URLEncoder
 import javax.inject.Inject
 
 class V2rayConfigUtil @Inject constructor(@ApplicationContext private val context: Context,private val gson: Gson) {
@@ -716,6 +718,5 @@ class V2rayConfigUtil @Inject constructor(@ApplicationContext private val contex
             return null
         }
     }
-
 
 }
