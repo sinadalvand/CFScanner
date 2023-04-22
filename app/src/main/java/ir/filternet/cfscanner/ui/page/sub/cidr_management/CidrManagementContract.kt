@@ -29,6 +29,8 @@ class CidrManagementContract{
             data class Toast(val message: String? = null, @StringRes val messageId: Int? = null) : Messenger()
         }
 
-        sealed class Navigation : Effect() {}
+        sealed class Navigation : Effect() {
+            object NavigateUP : Navigation()
+        }
     }
 }

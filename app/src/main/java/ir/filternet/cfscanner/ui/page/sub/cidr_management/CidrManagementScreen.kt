@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.SIDE_EFFECTS_KEY
 import ir.filternet.cfscanner.model.CIDR
+import ir.filternet.cfscanner.ui.common.HeaderPage
 import ir.filternet.cfscanner.ui.page.main.scan.ScanContract
 import ir.filternet.cfscanner.ui.page.main.scan.component.LoadingView
 import ir.filternet.cfscanner.ui.theme.Gray
@@ -59,6 +60,10 @@ fun CidrManagementScreen(
                     val message = effect.message ?: context.getString(effect.messageId!!)
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 }
+
+                is CidrManagementContract.Effect.Navigation.NavigateUP -> {
+                    onNavigationRequested.invoke(effect)
+                }
             }
         }?.collect()
     }
@@ -68,7 +73,7 @@ fun CidrManagementScreen(
     val data = state.cidrs
     var autoFetchEnabled = state.autofetch
     var shuffleEnabled = state.shuffle
-    val notDraggableItems = 4
+    val notDraggableItems = 5
 
     val listDragState = rememberReorderableLazyListState(
         canDragOver = { from, to ->
@@ -96,12 +101,17 @@ fun CidrManagementScreen(
         state = listDragState.listState,
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 10.dp)
             .reorderable(listDragState)
             .detectReorderAfterLongPress(listDragState),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(vertical = 10.dp)
+        contentPadding = PaddingValues(vertical = 10.dp, horizontal = 10.dp)
     ) {
+
+        item {
+            HeaderPage(stringResource(id = R.string.manage_cidrs)){
+                onNavigationRequested.invoke(CidrManagementContract.Effect.Navigation.NavigateUP)
+            }
+        }
 
         item {
             AutoFetch(autoFetchEnabled) {

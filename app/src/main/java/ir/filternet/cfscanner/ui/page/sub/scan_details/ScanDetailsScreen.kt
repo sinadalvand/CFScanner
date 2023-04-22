@@ -13,12 +13,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.SIDE_EFFECTS_KEY
 import ir.filternet.cfscanner.service.CloudScannerService
 import ir.filternet.cfscanner.service.CloudSpeedService
+import ir.filternet.cfscanner.ui.common.HeaderPage
 import ir.filternet.cfscanner.ui.page.main.scan.component.LoadingView
+import ir.filternet.cfscanner.ui.page.sub.cidr_management.CidrManagementContract
 import ir.filternet.cfscanner.ui.page.sub.scan_details.component.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -62,6 +66,12 @@ fun ScanDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(vertical = 20.dp)
         ) {
+
+            item {
+                HeaderPage(stringResource(id = R.string.scan_manager),Modifier.padding(horizontal = 10.dp)){
+                    onNavigationRequested.invoke(ScanDetailsContract.Effect.Navigation.ToUp)
+                }
+            }
 
             if (scan != null)
                 item {
