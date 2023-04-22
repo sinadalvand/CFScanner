@@ -131,4 +131,5 @@
     <string name="cidr_fetch_from_cache">CIDR ها از حافظه خوانده شد.</string>
     <string name="cidr_fetch_failed">خطا در دریافت CIDR ها. تلاش مجدد ... </string>
     <string name="scan_manager">مدیریت اسکن</string>
+    <string name="no_internet_connection">اینترنت متصل نیست !</string>
 </resources>

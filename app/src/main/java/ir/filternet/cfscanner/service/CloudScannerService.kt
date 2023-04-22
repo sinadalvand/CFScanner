@@ -118,7 +118,11 @@ class CloudScannerService : Service(),
             COMMAND_RESUME -> {
                 Timber.d("CloudScannerService: onStartCommand COMMAND_RESUME $scan")
                 if (scan != null) {
-                    startScanner(scan!!)
+                    if(isp!=null){
+                        startScanner(scan!!)
+                    }else{
+                        onScanPaused(scan!!,getString(R.string.no_internet_connection),false)
+                    }
                 } else {
                     stopSelf(true)
                 }
@@ -196,22 +200,15 @@ class CloudScannerService : Service(),
         Timber.d("CloudScannerService startScanner")
         launch {
             isp?.let {
-                val scanSettings = tinyStorage.scanSettings ?: ScanSettings()
                 val scan = scanRepository.createScan(config, it)
-                cfScanner.startScan(
-                    scan, CFScanner.ScanOptions(
-                        parallel = scanSettings.worker.toInt(),
-                        frontingDomain = scanSettings.fronting,
-                        autoFetch = scanSettings.autoFetch,
-                        shuffle = scanSettings.shuffle
-                    )
-                )
+                startScanner(scan)
             }
         }
     }
 
     private fun startScanner(scan: Scan) {
         Timber.d("CloudScannerService startScanner")
+        if(isp==null) return
         launch {
             val scanSettings = tinyStorage.scanSettings ?: ScanSettings()
             cfScanner.startScan(
