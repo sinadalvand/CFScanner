@@ -56,6 +56,7 @@ class CloudSpeedService : Service(), CFSpeed.CFSpeedListener {
                 stopForeground(true)
                 stopSelf()
             }
+
             else -> {}
         }
         return START_NOT_STICKY
@@ -89,7 +90,7 @@ class CloudSpeedService : Service(), CFSpeed.CFSpeedListener {
             this@CloudSpeedService.stopCheck()
         }
 
-        fun getLastStatus():SpeedServiceStatus{
+        fun getLastStatus(): SpeedServiceStatus {
             return lastStatus
         }
 
@@ -152,9 +153,11 @@ class CloudSpeedService : Service(), CFSpeed.CFSpeedListener {
     }
 
     override fun onFinishChecking(count: Int) {
-        with(notifManager) {
-            notify(NOTIFICATION_ID + Random.nextInt(), getSpeedCheckFinishedNotification(scan?.uid ?: 0))
-        }
+        // skip if quantity of connection is 1
+        if (count != 1)
+            with(notifManager) {
+                notify(NOTIFICATION_ID + Random.nextInt(), getSpeedCheckFinishedNotification(scan?.uid ?: 0))
+            }
     }
 
     override fun onStopChecking() {
