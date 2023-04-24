@@ -8,6 +8,7 @@ import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import dagger.hilt.android.HiltAndroidApp
 import go.Seq
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import ir.filternet.cfscanner.utils.userAssetPath
 import libv2ray.Libv2ray
 import timber.log.Timber
@@ -27,6 +28,10 @@ class CFScannerApplication : Application() {
         super.onCreate()
 
         DisableFDSAN()
+
+        RxJavaPlugins.setErrorHandler {
+            YandexMetrica.reportError("RxJava",it)
+        }
 
         // init V2ray
         Seq.setContext(this)
