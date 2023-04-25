@@ -11,6 +11,7 @@ import ir.filternet.cfscanner.repository.ConnectionRepository
 import ir.filternet.cfscanner.repository.ScanRepository
 import ir.filternet.cfscanner.service.CloudScannerService
 import ir.filternet.cfscanner.service.CloudSpeedService
+import ir.filternet.cfscanner.ui.page.sub.scan_details.component.ConnectionSort
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,6 +30,7 @@ class ScanDetailsScreenVM @Inject constructor(
     private var speedBinder: CloudSpeedService.CloudSpeedServiceBinder? = null
 
     private var scanID = -1
+    private var sorting:ConnectionSort = ConnectionSort.DATE
 
     init {
         Timber.d("DetailsScanScreenVM init")
@@ -58,14 +60,29 @@ class ScanDetailsScreenVM @Inject constructor(
                 speedBinder?.startCheck(viewState.value.connections)
             }
 
-            ScanDetailsContract.Event.StopSortAllBySpeed -> {
+            ScanDetailsContract.Event.StartSortAllByPing -> {
+                speedBinder?.startCheck(viewState.value.connections, true)
+            }
+
+            ScanDetailsContract.Event.StopSortAll -> {
                 speedBinder?.stopCheck()
             }
 
             ScanDetailsContract.Event.StopScan -> {
                 scannerBinder?.pauseScan()
             }
+
+            is ScanDetailsContract.Event.ChangeSortMode -> {
+                changeSorting(event.sort)
+            }
         }
+    }
+
+    private fun changeSorting(sort: ConnectionSort) {
+        this.sorting = sort
+        setState { copy(loading=true , sort = sort) }
+        setConnectionBySort(viewState.value.connections)
+        setState { copy(loading=false) }
     }
 
     private fun deleteScanHistory() = vmScope {
@@ -127,7 +144,20 @@ class ScanDetailsScreenVM @Inject constructor(
     }
 
     private fun setConnectionBySort(list: List<Connection>) {
-        setState { copy(connections = list.sortedByDescending { it.speed }) }
+       val list = list.let {
+            when(sorting){
+                ConnectionSort.DATE -> {
+                    it.sortedByDescending { it.update }
+                }
+                ConnectionSort.PING -> {
+                    it.sortedBy { it.delay }
+                }
+                ConnectionSort.SPEED -> {
+                    it.sortedByDescending { it.speed }
+                }
+            }
+        }
+        setState { copy(connections =list) }
     }
 
     fun setScan(scanID: Int) {

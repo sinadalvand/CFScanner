@@ -10,6 +10,9 @@ import ir.filternet.cfscanner.model.ISP
 import java.net.URI
 import java.net.URLConnection
 
+fun <T> Collection<T>.findIndex(predict: (T) -> Boolean):Int {
+    return this.indexOf(this.find(predict))
+}
 
 val URLConnection.responseLength: Long
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) contentLengthLong else contentLength.toLong()

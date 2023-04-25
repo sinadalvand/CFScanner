@@ -133,4 +133,10 @@
     <string name="scan_manager">مدیریت اسکن</string>
     <string name="no_internet_connection">اینترنت متصل نیست !</string>
     <string name="config_copied_to_clipboard">کانفیگ کپی شد.</string>
+    <string name="sort_by">مرتب سازی</string>
+    <string name="date">زمان</string>
+    <string name="speed">سرعت</string>
+    <string name="ping">تاخیر</string>
+    <string name="start_evaluation">شروع ارزیابی</string>
+    <string name="evaluating">ارزیابی(%d\%%)</string>
 </resources>

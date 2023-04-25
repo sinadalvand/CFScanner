@@ -25,6 +25,10 @@ import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
 
+fun percep(min: Float, max: Float, now: Float): Float =
+    (now.coerceIn(min, max) - min) / (max - min)
+
+
 fun ServerConfig.applyNewAddress(address: String): ServerConfig? {
     val newOutbeans = this.fullConfig?.getByCustomVnextOutbound(address)?.outbounds?.firstOrNull() ?: return null
     return this.copy(remarks = remarks.let { "$it|$address" },outboundBean = newOutbeans)

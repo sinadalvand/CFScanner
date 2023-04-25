@@ -21,8 +21,8 @@ class CFSpeed @Inject constructor(
     @ApplicationContext private val context: Context,
     private val scanRepository: ScanRepository,
     private val tinyStorage: TinyStorage,
-    private val rawClient:OkHttpClient,
-    private val v2rarUtils:V2rayConfigUtil
+    private val rawClient: OkHttpClient,
+    private val v2rarUtils: V2rayConfigUtil,
 ) :
     CoroutineScope by CoroutineScope(Dispatchers.IO + SupervisorJob()) {
 
@@ -30,10 +30,10 @@ class CFSpeed @Inject constructor(
     private var listener: CFSpeedListener? = null
     private var job: Job? = null
 
-    fun startCheck(connections: List<Connection>) {
+    fun startCheck(connections: List<Connection>, ping: Boolean = false) {
         job?.cancel()
         job = launch(Dispatchers.IO) {
-            startCheckProcess(connections)
+            startCheckProcess(connections, ping)
         }
 
     }
@@ -52,23 +52,23 @@ class CFSpeed @Inject constructor(
         job = null
     }
 
-    private suspend fun startCheckProcess(connections: List<Connection>) {
-        val port = 443
+    private suspend fun startCheckProcess(connections: List<Connection>, ping: Boolean = false) {
         val downloadSize = downloadTestLinks((tinyStorage.scanSettings ?: ScanSettings()).speedTestSize)
         val config = connections.firstOrNull()?.scan?.config?.config ?: throw IllegalStateException("No config found!")
+        val port = connections.firstOrNull()?.scan?.config?.v2rayConfig?.outbounds?.firstOrNull()?.settings?.vnext?.firstOrNull()?.port ?: 443
         val count = connections.size
         var checked = 0
         var duration = 0L
         listener?.onStartChecking(connections.size)
         connections.forEachIndexed { index, connection ->
-            val estimatedTimeInSecond = (duration/(checked.coerceAtLeast(1))) * (count-(index))
-            listener?.onCheckProcess(connection.copy(delay = 0, speed = 0, updating = true), index / (count * 1f),count-(index),estimatedTimeInSecond)
+            val estimatedTimeInSecond = (duration / (checked.coerceAtLeast(1))) * (count - (index))
+            listener?.onCheckProcess(connection.copy(delay = 0, speed = 0, updating = true), index / (count * 1f), count - (index), estimatedTimeInSecond)
             yield()
             val startTime = System.currentTimeMillis()
-            val (delay, speed) = startConnection(config, connection.ip, port, downloadSize)
-            val diff = (System.currentTimeMillis() - startTime)/1000
+            val (delay, speed) = startConnection(config, connection.ip, port, downloadSize, ping)
+            val diff = (System.currentTimeMillis() - startTime) / 1000
             yield()
-            listener?.onCheckProcess(connection.copy(delay = delay, speed = speed, updating = false), (index + 1) / (count * 1f),count-(index+1),estimatedTimeInSecond)
+            listener?.onCheckProcess(connection.copy(delay = delay, speed = speed, updating = false), (index + 1) / (count * 1f), count - (index + 1), estimatedTimeInSecond)
             duration += diff
             checked++
         }
@@ -78,7 +78,7 @@ class CFSpeed @Inject constructor(
     }
 
 
-    private suspend fun startConnection(config: String, ip: String, port: Int, file: String): Pair<Long, Long> {
+    private suspend fun startConnection(config: String, ip: String, port: Int, file: String, justPing: Boolean = false): Pair<Long, Long> {
         val ports = "4${getGeneratedPort(ip)}".toInt()
         val conf = v2rarUtils.createServerConfig(config)?.fullConfig?.getByCustomVnextOutbound(port, ip)?.getByCustomInbound(ports)?.toPrettyPrinting()!!
         val client = V2RayClient(context, conf)
@@ -88,7 +88,10 @@ class CFSpeed @Inject constructor(
         yield()
         val delay = client.measureDelay()
         yield()
-        val speed = downloadTest(ports, file)
+        var speed = -1L
+        if (!justPing) {
+            speed = downloadTest(ports, file)
+        }
         if (client.isRunning()) {
             client.disconnect()
         }
@@ -128,7 +131,7 @@ class CFSpeed @Inject constructor(
             val end_time = System.currentTimeMillis()
             val diff_time = end_time - start_time
             yield()
-            val speed = ((size?.toLong()?:0L) / diff_time)* 1000 / 1024
+            val speed = ((size?.toLong() ?: 0L) / diff_time) * 1000 / 1024
 
             response.body?.close()
             response.close()
@@ -141,9 +144,9 @@ class CFSpeed @Inject constructor(
     }
 
     interface CFSpeedListener {
-        fun onStartChecking(count:Int)
-        fun onCheckProcess(connection: Connection, progress: Float , remainItem:Int , estimatedTime:Long)
-        fun onFinishChecking(count:Int)
+        fun onStartChecking(count: Int)
+        fun onCheckProcess(connection: Connection, progress: Float, remainItem: Int, estimatedTime: Long)
+        fun onFinishChecking(count: Int)
         fun onStopChecking()
     }
 }

@@ -8,16 +8,20 @@ import ir.filternet.cfscanner.model.Config
 import ir.filternet.cfscanner.model.Connection
 import ir.filternet.cfscanner.model.Scan
 import ir.filternet.cfscanner.service.CloudSpeedService
+import ir.filternet.cfscanner.ui.page.sub.scan_details.component.ConnectionSort
 
 class ScanDetailsContract {
 
     sealed class Event : ViewEvent {
         object StartSortAllBySpeed : Event()
-        object StopSortAllBySpeed : Event()
+        object StartSortAllByPing : Event()
+        object StopSortAll : Event()
+        data class ChangeSortMode(val sort: ConnectionSort) : Event()
         data class UpdateSpeed(val connection: Connection) : Event()
         object ResumeScan : Event()
         object StopScan : Event()
         object DeleteScan : Event()
+
     }
 
     data class State(
@@ -25,6 +29,7 @@ class ScanDetailsContract {
         val scan: Scan? = null,
         val connections: List<Connection> = emptyList(),
         val configs: List<Config> = emptyList(),
+        val sort: ConnectionSort = ConnectionSort.DATE,
         val scanning: Boolean = true,
         val deleteable:Boolean = true,
         val speedStatus:CloudSpeedService.SpeedServiceStatus = CloudSpeedService.SpeedServiceStatus.Disable

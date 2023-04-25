@@ -82,8 +82,8 @@ class CloudSpeedService : Service(), CFSpeed.CFSpeedListener {
 
     inner class CloudSpeedServiceBinder : Binder() {
 
-        fun startCheck(connection: List<Connection>) {
-            this@CloudSpeedService.startCheck(connection)
+        fun startCheck(connection: List<Connection>,justPing:Boolean=false) {
+            this@CloudSpeedService.startCheck(connection,justPing)
         }
 
         fun stopCheck() {
@@ -107,8 +107,8 @@ class CloudSpeedService : Service(), CFSpeed.CFSpeedListener {
     }
 
 
-    private fun startCheck(connections: List<Connection>) {
-        cfspeed.startCheck(connections)
+    private fun startCheck(connections: List<Connection>,justPing:Boolean=false) {
+        cfspeed.startCheck(connections,justPing)
     }
 
     private fun stopCheck() {
