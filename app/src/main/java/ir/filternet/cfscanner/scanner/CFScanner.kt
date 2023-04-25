@@ -201,6 +201,8 @@ class CFScanner @Inject constructor(
                 }
                 logger.add(Log(cidr.address, context.getString(R.string.end_scan_for,cidr.address,cidr.subnetMask), STATUS.SUCCESS))
             }
+
+            semaphore.tryAcquire(parallel, 10, TimeUnit.SECONDS)
         }
 
         if (this.isActive) {
@@ -216,6 +218,8 @@ class CFScanner @Inject constructor(
 
         // 2. convert cidrs order to cidr list
         val cidrList = cidrRepository.getAllCIDR(options.autoFetch)
+                // filter custom range
+            .let { if(options.customRange) it.filter { it.custom } else it }
 
         return if (!cidrIdList.isNullOrEmpty()) {
             cidrList.sortedBy { cidrIdList.indexOf(it.uid) }
@@ -380,6 +384,7 @@ class CFScanner @Inject constructor(
         val frontingDomain: String = "",
         val autoFetch: Boolean = true,
         val shuffle: Boolean = false,
+        val customRange: Boolean = false,
     )
 
 

@@ -13,6 +13,7 @@ class CidrManagementContract{
         data class RemoveCIDR(val cidr: CIDR) : Event()
         data class MoveCidr(val from: Int, val to: Int) : Event()
         data class ShuffleChange(val enabled:Boolean = false) : Event()
+        data class CustomRange(val enabled:Boolean = false) : Event()
         data class AutoFetchChange(val enabled:Boolean = false) : Event()
         object SaveCidrs: Event()
     }
@@ -21,6 +22,7 @@ class CidrManagementContract{
         val loading: Boolean = false,
         val autofetch:Boolean = true,
         val shuffle:Boolean = false,
+        val customRange:Boolean = false,
         val cidrs : List<CIDR> = listOf(),
     ) : ViewState
 

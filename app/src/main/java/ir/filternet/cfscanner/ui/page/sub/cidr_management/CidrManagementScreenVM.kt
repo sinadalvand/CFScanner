@@ -2,13 +2,12 @@ package ir.filternet.cfscanner.ui.page.sub.cidr_management
 
 import androidx.annotation.WorkerThread
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.BaseViewModel
 import ir.filternet.cfscanner.model.CIDR
-import ir.filternet.cfscanner.model.ScanSettings
 import ir.filternet.cfscanner.offline.TinyStorage
 import ir.filternet.cfscanner.repository.CIDRRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,12 +24,15 @@ class CidrManagementScreenVM @Inject constructor(
 
         vmScope {
             tinyStorage.scanSettings.apply {
-                setState { copy(autofetch = this@apply.autoFetch, shuffle = this@apply.shuffle) }
+                setState {
+                    copy(
+                        autofetch = this@apply.autoFetch,
+                        shuffle = this@apply.shuffle,
+                        customRange = this@apply.customRange
+                    )
+                }
+                getCidrList()
             }
-        }
-
-        vmScope {
-            getCidrList()
         }
 
     }
@@ -45,34 +47,69 @@ class CidrManagementScreenVM @Inject constructor(
             is CidrManagementContract.Event.AddIpRanges -> {
                 addCidr(event.ranges)
             }
+
             is CidrManagementContract.Event.RemoveCIDR -> {
                 removeCidr(event.cidr)
             }
+
             is CidrManagementContract.Event.MoveCidr -> {
                 saveCidrMoves(event.from, event.to)
             }
+
             CidrManagementContract.Event.SaveCidrs -> {
-                saveCidrList()
+                saveCIdrAfterMovement()
             }
+
             is CidrManagementContract.Event.AutoFetchChange -> {
                 saveAutoFetchState(event.enabled)
             }
+
             is CidrManagementContract.Event.ShuffleChange -> {
                 saveShuffleState(event.enabled)
+            }
+
+            is CidrManagementContract.Event.CustomRange -> {
+                saveCustomRangeState(event.enabled)
             }
         }
     }
 
     @WorkerThread
     private fun getCidrList() = vmScope(Dispatchers.IO) {
-        val cidrs = cidrRepository.getAllCIDR().sortedBy { it.position }
-        setState { copy(loading = false, cidrs = cidrs) }
+        cidrRepository.getAllCIDR()
+            .let {
+                if (viewState.value.customRange)
+                    it.filter { it.custom }
+                else
+                    it
+            }
+            .sortedBy { it.position }
+            .let {
+                setState { copy(loading = false, cidrs = it) }
+            }
     }
+
 
     private fun saveShuffleState(enabled: Boolean) {
         tinyStorage.scanSettings.copy(shuffle = enabled).apply {
             tinyStorage.scanSettings = this
             setState { copy(shuffle = enabled) }
+        }
+    }
+
+    private fun saveCustomRangeState(enabled: Boolean) {
+
+        // if there is not any custom range , then prevent user from enabling custom range
+        if (viewState.value.cidrs.none { it.custom }) {
+            setEffect { CidrManagementContract.Effect.Messenger.Toast(messageId = R.string.there_is_not_any_custom_range) }
+            return
+        }
+
+
+        tinyStorage.scanSettings.copy(customRange = enabled).apply {
+            tinyStorage.scanSettings = this
+            setState { copy(customRange = enabled) }
+            getCidrList()
         }
     }
 
@@ -93,30 +130,49 @@ class CidrManagementScreenVM @Inject constructor(
         }
     }
 
-    private fun saveCidrList() {
-        vmScope {
-            cidrRepository.updateCidrPositions(viewState.value.cidrs)
+    private fun saveCIdrAfterMovement() = vmScope(Dispatchers.IO) {
+        val pairPosition = viewState.value.cidrs
+            .map { it.uid to it.position }
+            .sortedBy { it.second }
+            .toMap()
+
+        val list = cidrRepository.getAllCIDR()
+            .sortedBy { it.position }
+            .mapIndexed { index, cidr ->
+                cidr.copy(position = pairPosition.get(cidr.uid) ?: (pairPosition.size + index))
+            }
+
+        saveCidrList(list)
+        getCidrList()
+    }
+
+    private suspend fun saveCidrList(list: List<CIDR>) {
+        list.sortedBy { it.position }.mapIndexed { index, cidr ->
+            cidr.copy(position = index)
+        }.let {
+            cidrRepository.updateCidrPositions(it)
         }
     }
 
     private fun removeCidr(cidr: CIDR) {
-        vmScope {
+        vmScope(Dispatchers.IO) {
 
             // delete from database
             cidrRepository.deleteCIdr(cidr)
 
 
             // update positions after item in list
-            val newCidr = viewState.value.cidrs.toMutableList()
-                .apply { remove(cidr) }
-                .mapIndexed { index, cidr ->
-                    cidr.copy(position = index)
-                }
+            val newCidr = cidrRepository.getAllCIDR()
+                .toMutableList()
 
+            // disable custom range if empty
+            if (newCidr.none { it.custom }) {
+                saveCustomRangeState(false)
+            }
 
             // update ui and db
-            setState { copy(cidrs = newCidr) }
-            saveCidrList()
+            saveCidrList(newCidr)
+            getCidrList()
 
         }
     }
@@ -124,19 +180,28 @@ class CidrManagementScreenVM @Inject constructor(
     private fun addCidr(rawCidrs: List<String>) {
         vmScope(Dispatchers.IO) {
 
-            val cidrs = rawCidrs.map {
+            val allItems = cidrRepository.getAllCIDR()
+                .sortedBy { it.position }.toMutableList()
+
+            val newCidr = rawCidrs.map {
                 val (address, mask) = it.split("/")
                 CIDR(address, mask.toInt(), custom = true)
             }
 
-            // update positions after item in list
-            val newCidr = viewState.value.cidrs.toMutableList()
-                .apply { addAll(0, cidrs) }
-                .mapIndexed { index, cidr ->
-                    cidr.copy(position = index)
+
+            val shouldRemove = allItems
+                .filter { newCidr.map { it.address + "/" + it.subnetMask }.contains(it.address + "/" + it.subnetMask) }
+                .onEach {
+                    cidrRepository.deleteCIdr(it)
                 }
 
-            cidrRepository.updateCidrPositions(newCidr)
+            allItems.removeAll(shouldRemove)
+
+            // update positions after item in list
+            val combinedCidr = allItems
+                .apply { addAll(0, newCidr) }
+
+            saveCidrList(combinedCidr)
             getCidrList()
         }
     }

@@ -8,4 +8,5 @@ data class ScanSettings(
     val fronting: String = BuildConfig.FrontingAddress,
     val autoFetch: Boolean = true,
     val shuffle: Boolean = false,
+    val customRange: Boolean = false,
 )

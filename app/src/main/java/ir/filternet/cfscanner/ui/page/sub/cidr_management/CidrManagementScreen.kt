@@ -73,7 +73,8 @@ fun CidrManagementScreen(
     val data = state.cidrs
     var autoFetchEnabled = state.autofetch
     var shuffleEnabled = state.shuffle
-    val notDraggableItems = 5
+    var customRange = state.customRange
+    val notDraggableItems = 6
 
     val listDragState = rememberReorderableLazyListState(
         canDragOver = { from, to ->
@@ -104,7 +105,7 @@ fun CidrManagementScreen(
             .reorderable(listDragState)
             .detectReorderAfterLongPress(listDragState),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(vertical = 10.dp, horizontal = 10.dp)
+        contentPadding = PaddingValues(bottom = 10.dp, end = 10.dp,start = 10.dp)
     ) {
 
         item {
@@ -123,8 +124,14 @@ fun CidrManagementScreen(
 
         item {
             ShuffleList(shuffleEnabled) {
-                shuffleEnabled = it
                 onEventSent.invoke(CidrManagementContract.Event.ShuffleChange(it))
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+
+        item {
+            CustomRange(customRange) {
+                onEventSent.invoke(CidrManagementContract.Event.CustomRange(it))
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
@@ -202,6 +209,38 @@ private fun AutoFetch(state: Boolean, onChange: (Boolean) -> Unit = {}) {
         }
 
         Text(text = stringResource(R.string.auto_fetch_ip_range_desc), modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
+    }
+
+}
+
+@Composable
+private fun CustomRange(state: Boolean, onChange: (Boolean) -> Unit = {}) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.onSurface, RoundedCornerShape(5))
+            .padding(10.dp)
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResource(R.string.custom_range), Modifier.weight(1f))
+            Switch(
+                checked = state,
+                onCheckedChange = onChange,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Green,
+                    uncheckedThumbColor = Gray,
+                    checkedTrackColor = Green.copy(0.4f),
+                    uncheckedTrackColor = Gray.copy(0.4f)
+                )
+            )
+        }
+
+        Text(text = stringResource(R.string.custom_range_desc), modifier = Modifier.padding(4.dp), fontSize = 13.sp, fontWeight = FontWeight.Light)
     }
 
 }

@@ -118,24 +118,27 @@ class CloudScannerService : Service(),
             COMMAND_RESUME -> {
                 Timber.d("CloudScannerService: onStartCommand COMMAND_RESUME $scan")
                 if (scan != null) {
-                    if(isp!=null){
+                    if (isp != null) {
                         startScanner(scan!!)
-                    }else{
-                        onScanPaused(scan!!,getString(R.string.no_internet_connection),false)
+                    } else {
+                        onScanPaused(scan!!, getString(R.string.no_internet_connection), false)
                     }
                 } else {
                     stopSelf(true)
                 }
             }
+
             COMMAND_PAUSE -> {
                 Timber.d("CloudScannerService: onStartCommand COMMAND_PAUSE")
                 cfScanner.stopScan(false, getString(R.string.scan_paused_by_you))
             }
+
             COMMAND_TERMINATE -> {
                 Timber.d("CloudScannerService: onStartCommand COMMAND_TERMINATE")
                 stopScan()
                 stopSelf(true)
             }
+
             else -> {}
         }
         return START_NOT_STICKY
@@ -208,7 +211,7 @@ class CloudScannerService : Service(),
 
     private fun startScanner(scan: Scan) {
         Timber.d("CloudScannerService startScanner")
-        if(isp==null) return
+        if (isp == null) return
         launch {
             val scanSettings = tinyStorage.scanSettings ?: ScanSettings()
             cfScanner.startScan(
@@ -216,7 +219,8 @@ class CloudScannerService : Service(),
                     parallel = scanSettings.worker.toInt(),
                     frontingDomain = scanSettings.fronting,
                     autoFetch = scanSettings.autoFetch,
-                    shuffle = scanSettings.shuffle
+                    shuffle = scanSettings.shuffle,
+                    customRange = scanSettings.customRange
                 )
             )
         }
@@ -325,12 +329,14 @@ class CloudScannerService : Service(),
                     setServiceStatus(ServiceStatus.Idle(isp))
                 }
             }
+
             NetworkManager.NetworkState.WAITING -> {
                 if (cfScanner.isRunning()) {
                     cfScanner.stopScan(byUser = false, reason = "No internet connection")
                 }
                 setServiceStatus(ServiceStatus.Disabled("No internet connection"))
             }
+
             NetworkManager.NetworkState.DISCONNECTED -> {
                 if (cfScanner.isRunning()) {
                     cfScanner.stopScan(byUser = false, reason = "No internet connection")

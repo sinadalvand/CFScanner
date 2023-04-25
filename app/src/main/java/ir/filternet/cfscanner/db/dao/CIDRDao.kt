@@ -17,6 +17,9 @@ interface CIDRDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateCidr(vararg cidrEntities: CidrEntity)
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun forceUpdateCidr(cidrEntity: List<CidrEntity>)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(vararg cidrEntities: CidrEntity):List<Long>
 

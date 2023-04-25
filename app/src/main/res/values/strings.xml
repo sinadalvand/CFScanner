@@ -140,4 +140,7 @@
     <string name="start_evaluation">Start Evaluation</string>
     <string name="evaluating">Evaluating %d\%%</string>
     <string name="config_copied_to_clipboard">Config Copied to Clipboard.</string>
+    <string name="custom_range">Only Custom Range</string>
+    <string name="custom_range_desc">Limit scan to entered Custom IP ranges</string>
+    <string name="there_is_not_any_custom_range">You don\'t have any custom range !</string>
 </resources>
