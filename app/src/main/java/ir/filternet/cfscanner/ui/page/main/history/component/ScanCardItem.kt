@@ -83,7 +83,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
                     }
                 }
 
-                ScanProgressView(ScanProgress(100, 50, 20))
+                ScanProgressView(scan.progress)
             }
 
             Spacer(modifier = Modifier.width(5.dp))
@@ -96,7 +96,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
 @Composable
 fun ScanProgressView(progress: ScanProgress) {
     val color = MaterialTheme.colors.primary
-    val percentage = progress.run { checkConnectionCount / totalConnectionCount }
+    val percentage = progress.run { (checkConnectionCount*1f) / totalConnectionCount*1f }
     val percent = percentage * 360f
     Box(
         modifier = Modifier
@@ -111,7 +111,7 @@ fun ScanProgressView(progress: ScanProgress) {
             drawArc(color.copy(0.1f), 0f, 360F, false, style = Stroke(7f, cap = StrokeCap.Square))
         }
 
-        Text(text = "${percentage.toInt()}%", fontWeight = FontWeight.Medium, fontSize = 14.sp, color = color)
+        Text(text = "${(percentage*100).toInt()}%", fontWeight = FontWeight.Medium, fontSize = 14.sp, color = color)
     }
 }
 

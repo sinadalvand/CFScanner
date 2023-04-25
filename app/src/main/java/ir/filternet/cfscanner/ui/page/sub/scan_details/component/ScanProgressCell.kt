@@ -17,12 +17,13 @@ import androidx.compose.ui.unit.sp
 import com.valentinilk.shimmer.shimmer
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.model.ScanProgress
+import ir.filternet.cfscanner.utils.round
 
 @Composable
 fun ScanProgressCell(progress: ScanProgress, shimming: Boolean = false) {
     val total = if (progress.totalConnectionCount > 0) progress.totalConnectionCount else 1
-    val checked = (progress.checkConnectionCount / total) / 100f
-    val success = (progress.successConnectionCount / total) / 100f
+    val checked = (progress.checkConnectionCount / (total*1f))
+    val success = (progress.successConnectionCount / (total*1f))
     Column(
         Modifier
             .fillMaxWidth()
@@ -38,8 +39,8 @@ fun ScanProgressCell(progress: ScanProgress, shimming: Boolean = false) {
 @Composable
 private fun PercentageDetails(progress: ScanProgress) {
     val total = if (progress.totalConnectionCount > 0) progress.totalConnectionCount else 1
-    val checked = (progress.checkConnectionCount / total) / 100f
-    val success = (progress.successConnectionCount / total) / 100f
+    val checked = (progress.checkConnectionCount / (total*1f))
+    val success = (progress.successConnectionCount / (total*1f))
 
     Row(Modifier.fillMaxWidth()) {
         val color = MaterialTheme.colors.primary
@@ -64,7 +65,7 @@ private fun PercentageDetails(progress: ScanProgress) {
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            Text(text = "$checked%", fontSize = 9.sp, color = color)
+            Text(text = "${(checked*100).round()}%", fontSize = 9.sp, color = color)
 
         }
 
@@ -110,7 +111,7 @@ private fun PercentageDetails(progress: ScanProgress) {
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            Text(text = "$success%", fontSize = 9.sp, color = color)
+            Text(text = "${(success*100).round()}%", fontSize = 9.sp, color = color)
         }
 
     }

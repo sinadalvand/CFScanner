@@ -7,10 +7,18 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.model.ISP
+import java.math.RoundingMode
 import java.net.URI
 import java.net.URLConnection
+import java.text.DecimalFormat
 
-fun <T> Collection<T>.findIndex(predict: (T) -> Boolean):Int {
+fun Float.round(pattern: String = "#.#"): String {
+    val df = DecimalFormat(pattern)
+    df.roundingMode = RoundingMode.DOWN
+    return df.format(this)
+}
+
+fun <T> Collection<T>.findIndex(predict: (T) -> Boolean): Int {
     return this.indexOf(this.find(predict))
 }
 
@@ -55,15 +63,15 @@ fun ISP.parseToCommonName(context: Context): String {
         "Boomerang" to R.string.boomrang,
     )
     nameMap.forEach {
-        if (this.name.contains(it.key,true)) {
+        if (this.name.contains(it.key, true)) {
             return context.getString(it.value)
         }
     }
-    return this.name.split(" ").firstOrNull()?:"Unknown"
+    return this.name.split(" ").firstOrNull() ?: "Unknown"
 }
 
 
-fun Context.openBrowser(link:String){
+fun Context.openBrowser(link: String) {
     val intent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(link))
-    ContextCompat.startActivity(this,intent,null)
+    ContextCompat.startActivity(this, intent, null)
 }
