@@ -83,8 +83,9 @@ fun UpdateHeader(
         if (update?.state is UpdateState.Downloading) {
             Spacer(
                 modifier = Modifier
-                    .fillMaxWidth((update.state as UpdateState.Downloading).progress*100f)
+                    .fillMaxWidth((update.state as UpdateState.Downloading).progress)
                     .height(height)
+                    .background(MaterialTheme.colors.primary)
             )
         }
 
