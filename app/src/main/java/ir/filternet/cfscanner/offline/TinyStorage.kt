@@ -35,4 +35,7 @@ class TinyStorage(context: Context, gson: Gson) : KotprefModel(context) {
         val lastConnection = lastConnection ?: mutableMapOf()
         return lastConnection[scanId]
     }
+
+
+    var lastUpdateDownloadId by intPref(default = -1)
 }

@@ -1,4 +1,4 @@
-package ir.filternet.cfscanner.ui.page.main.components
+package ir.filternet.cfscanner.ui.components
 
 import androidx.annotation.IntegerRes
 import androidx.compose.animation.core.animateFloatAsState

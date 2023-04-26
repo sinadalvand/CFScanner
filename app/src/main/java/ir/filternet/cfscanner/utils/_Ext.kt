@@ -4,13 +4,48 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import ir.filternet.cfscanner.BuildConfig
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.model.ISP
+import java.io.File
 import java.math.RoundingMode
 import java.net.URI
 import java.net.URLConnection
 import java.text.DecimalFormat
+
+fun Context.installFile(file:File) {
+    if (!file.exists()) return
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (!packageManager.canRequestPackageInstalls()) {
+            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.data = Uri.parse(String.format("package:%s", packageName))
+            startActivity(intent)
+            return
+        }
+    }
+
+    file.let {
+        val contentUri = FileProvider.getUriForFile(this, "$packageName.provider", it)
+        val install = Intent(Intent.ACTION_VIEW)
+        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        install.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        install.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+        install.data = contentUri
+        startActivity(install)
+    }
+
+}
+
+
+fun File.uriFromFile(context: Context): Uri? {
+    return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", this);
+}
 
 fun Float.round(pattern: String = "#.#"): String {
     val df = DecimalFormat(pattern)

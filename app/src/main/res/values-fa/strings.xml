@@ -67,7 +67,7 @@
     <string name="scan_history">سابقه اسکن</string>
     <string name="total">کل</string>
     <string name="success">موفق</string>
-    <string name="update_desc">برای دیدن اپدیت ها کلیک کنید</string>
+    <string name="update_desc">برای دیدن آپدیت ها کلیک کنید</string>
     <string name="ongoing">در حال اجرا</string>
     <string name="notif_scanning_content">اسکن شده: %d  \t  موفق: %d</string>
     <string name="preparing">آماده سازی</string>
@@ -90,7 +90,7 @@
     <string name="checking_title">در حال بررسی</string>
     <string name="done">تمام</string>
     <string name="save">ذخیره</string>
-    <string name="default_config_updated">کانفیگ پیشفرض اپدیت شد.</string>
+    <string name="default_config_updated">کانفیگ پیشفرض آپدیت شد.</string>
     <string name="default_config_cannot_delete">نمیتوان کانفیگ پیشفرض را حذف کرد!</string>
     <string name="notification_permission">مجوز اعلان</string>
     <string name="notification_permission_desc">جهت ادامه فرایند اسکن در پس زمینه در صورت بستن برنامه نیاز به واگذاری مجوز اعلان است . در صورت عدم مجوز ، فرایند اسکن با بستن برنامه به صورت ناخواسته خاتمه می یابد !</string>
@@ -139,7 +139,21 @@
     <string name="ping">تاخیر</string>
     <string name="start_evaluation">شروع ارزیابی</string>
     <string name="evaluating">ارزیابی(%d\%%)</string>
-    <string name="custom_range">Custom Ip Range</string>
-    <string name="custom_range_desc">Just use Custom Ip Range</string>
-    <string name="there_is_not_any_custom_range">You don\'t have any custom range !</string>
+    <string name="custom_range">استفاد از رنج های شخصی</string>
+    <string name="custom_range_desc">فقط از رنج های وارد شده توسط من استفاده کن</string>
+    <string name="there_is_not_any_custom_range">شما رنج وارد شده ای ندارید !</string>
+    <string name="update_available">بروز رسانی</string>
+    <string name="what_s_changed">تغییرات:</string>
+    <string name="download_update">دانلود بروز رسانی</string>
+    <string name="install_update">نصب بروز رسانی</string>
+    <string name="update_channel">بروز رسانی</string>
+    <string name="update_channel_description">تمام نوتیفیکیشن های مربوط به آپدیت برنامه در این بخش قرار خواهد گرفت</string>
+    <string name="downloading">در حال دانلود</string>
+    <string name="preparing_download">آماده سازی فایل برای دانلود ...</string>
+    <string name="download_preparing">اماده سازی دانلود</string>
+    <string name="downloading_update_file">دانلود فایل آپدیت (%d)</string>
+    <string name="download_finished">دانلود به اتمام رسید</string>
+    <string name="download_update_finished">فرایند دانلود آپدیت برنامه به پایان رسید.</string>
+    <string name="update_downloading">دریافت آپدیت %s\%%</string>
+    <string name="update_ready_to_install">آپدیت آماده نصب است</string>
 </resources>
