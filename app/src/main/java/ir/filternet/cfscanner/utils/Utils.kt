@@ -28,6 +28,10 @@ import kotlin.math.pow
 fun percep(min: Float, max: Float, now: Float): Float =
     (now.coerceIn(min, max) - min) / (max - min)
 
+fun ServerConfig.applyNewAddressByISPname(address: String,ispName:String?): ServerConfig? {
+    val newOutbeans = this.fullConfig?.getByCustomVnextOutbound(address)?.outbounds?.firstOrNull() ?: return null
+    return this.copy(remarks = remarks.let { "$it|${ispName?:address}" },outboundBean = newOutbeans)
+}
 
 fun ServerConfig.applyNewAddress(address: String): ServerConfig? {
     val newOutbeans = this.fullConfig?.getByCustomVnextOutbound(address)?.outbounds?.firstOrNull() ?: return null
