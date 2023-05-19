@@ -156,4 +156,5 @@
     <string name="download_update_finished">فرایند دانلود آپدیت برنامه به پایان رسید.</string>
     <string name="update_downloading">دریافت آپدیت %s\%%</string>
     <string name="update_ready_to_install">آپدیت آماده نصب است</string>
+    <string name="waiting_for_network">Waiting for Network</string>
 </resources>

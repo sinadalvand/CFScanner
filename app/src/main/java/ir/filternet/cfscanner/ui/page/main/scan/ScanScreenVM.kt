@@ -201,6 +201,9 @@ class ScanScreenVM @Inject constructor(
             is CloudScannerService.ServiceStatus.Disabled -> {
                 setState { copy(buttonState = ScanButtonState.Disabled(status.message)) }
             }
+            is CloudScannerService.ServiceStatus.WaitingForNetwork -> {
+                setState { copy(buttonState = ScanButtonState.WaitingForNetwork) }
+            }
             else -> {}
         }
 
