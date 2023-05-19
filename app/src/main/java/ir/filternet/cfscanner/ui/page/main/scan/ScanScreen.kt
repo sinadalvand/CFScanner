@@ -19,6 +19,7 @@ import ir.filternet.cfscanner.ui.common.ScanningDetailsView
 import ir.filternet.cfscanner.ui.page.main.scan.component.*
 import ir.filternet.cfscanner.utils.isNotificationEnabled
 import ir.filternet.cfscanner.utils.parseToCommonName
+import ir.filternet.cfscanner.utils.tryStartForegroundService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -117,7 +118,7 @@ fun ScanScreen(
                     onEventSent(ScanContract.Event.StopScan)
                 }
                 is ScanButtonState.Ready, is ScanButtonState.Paused -> {
-                    ContextCompat.startForegroundService(context, Intent(context, CloudScannerService::class.java))
+                    context.tryStartForegroundService(CloudScannerService::class.java)
                     onEventSent(ScanContract.Event.StartScan)
                 }
                 else -> {}

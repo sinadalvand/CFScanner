@@ -3,10 +3,12 @@ package ir.filternet.cfscanner.utils
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.text.TextUtils
 import android.util.Base64
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -14,6 +16,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import ir.filternet.cfscanner.model.Config
 import ir.filternet.cfscanner.scanner.v2ray.EConfigType
 import ir.filternet.cfscanner.scanner.v2ray.ServerConfig
+import ir.filternet.cfscanner.service.CloudScannerService
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -25,6 +28,13 @@ import java.net.URLEncoder
 import java.util.*
 import kotlin.math.pow
 
+fun Context.tryStartForegroundService(serviceClass:Class<*>){
+    if(isNotificationEnabled()){
+        ContextCompat.startForegroundService(this, Intent(this, serviceClass))
+    }else{
+        startService(Intent(this, serviceClass))
+    }
+}
 fun percep(min: Float, max: Float, now: Float): Float =
     (now.coerceIn(min, max) - min) / (max - min)
 

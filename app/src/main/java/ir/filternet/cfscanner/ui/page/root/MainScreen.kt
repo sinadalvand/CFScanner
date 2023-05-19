@@ -27,6 +27,7 @@ import ir.filternet.cfscanner.ui.navigation.CFScannerSubNavigation
 import ir.filternet.cfscanner.ui.page.root.components.PlayfulBottomNavigation
 import ir.filternet.cfscanner.ui.page.root.components.UpdateHeader
 import ir.filternet.cfscanner.utils.installFile
+import ir.filternet.cfscanner.utils.tryStartForegroundService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -71,7 +72,7 @@ fun MainScreen(
         Column {
             UpdateHeader(update,
                 onDownload = {
-                    ContextCompat.startForegroundService(context, Intent(context, CloudUpdateService::class.java))
+                    context.tryStartForegroundService(CloudUpdateService::class.java)
                     onEventSent.invoke(MainContract.Event.StartDownloadUpdate)
                 },
                 onCancel = {
