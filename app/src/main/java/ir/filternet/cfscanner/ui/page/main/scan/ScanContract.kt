@@ -12,6 +12,7 @@ class ScanContract {
         object StartScan : Event()
         object StopScan : Event()
         object DisableNotificationDialog : Event()
+        object SkipCurrentRange : Event()
         data class DeleteConfig(val config: Config) : Event()
         data class UpdateConfig(val config: Config) : Event()
         data class AddConfig(val config: String) : Event()

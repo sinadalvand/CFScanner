@@ -158,4 +158,6 @@
     <string name="update_downloading">Update Downloading %s\%%</string>
     <string name="update_ready_to_install">Update is Read to Install</string>
     <string name="waiting_for_network">Waiting for Network</string>
+    <string name="skipped_range">%d IPs skipped for %s</string>
+    <string name="skip_this_range">Skip this range</string>
 </resources>

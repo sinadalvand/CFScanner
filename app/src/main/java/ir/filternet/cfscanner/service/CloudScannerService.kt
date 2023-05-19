@@ -184,6 +184,10 @@ class CloudScannerService : Service(),
             stopScan()
         }
 
+        fun skipCurrentRange(){
+            _skipCurrentRange()
+        }
+
         fun getLastScan(): Scan? = scan
 
         fun getServiceStatus(): ServiceStatus = serviceStatus
@@ -228,8 +232,16 @@ class CloudScannerService : Service(),
 
     private fun stopScan() {
         Timber.d("CloudScannerService stopScan")
-        cfScanner?.apply {
+        cfScanner.apply {
             stopScan(true)
+        }
+    }
+
+
+    private fun _skipCurrentRange(){
+        Timber.d("CloudScannerService skipCurrentRange")
+        cfScanner.apply {
+           skipCurrentRange()
         }
     }
 

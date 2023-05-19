@@ -71,7 +71,9 @@ class ScanScreenVM @Inject constructor(
             is ScanContract.Event.DisableNotificationDialog -> {
                 setState { copy(dismissNotificationDialog = true) }
             }
-
+            is ScanContract.Event.SkipCurrentRange -> {
+                binder?.skipCurrentRange()
+            }
         }
     }
 

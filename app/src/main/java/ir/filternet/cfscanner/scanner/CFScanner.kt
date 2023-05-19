@@ -26,6 +26,7 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class CFScanner @Inject constructor(
@@ -47,6 +48,8 @@ class CFScanner @Inject constructor(
 
     private val cidrs: ArrayList<CIDR> = arrayListOf()
     private var scan: Scan? = null
+
+    private var skipCurrentRange:Boolean = false
 
     fun startScan(scan: Scan, options: ScanOptions = ScanOptions()) {
         discoveryJob?.cancel()
@@ -86,6 +89,13 @@ class CFScanner @Inject constructor(
 
     fun isRunning(): Boolean {
         return discoveryJob?.isActive ?: false
+    }
+
+
+    fun skipCurrentRange(){
+        if(!skipCurrentRange){
+            skipCurrentRange = true
+        }
     }
 
     private suspend fun CoroutineScope.startScan(scan: Scan, options: ScanOptions) {
@@ -130,7 +140,7 @@ class CFScanner @Inject constructor(
         runBlocking {
             // worker controller
             val semaphore = Semaphore(parallel)
-
+            var skipped  = 0
             allCIDR.let {
 
                 // delete scanned cidr
@@ -157,6 +167,7 @@ class CFScanner @Inject constructor(
                 Timber.d("CFScanner: Start Scan for ${cidr.address}/${cidr.subnetMask} by $count ips")
                 /* ============== */
 
+                skipped  = 0
                 repeat(count) { index ->
 
                     val ip = getIpAddressByIndex(cidr.address, cidr.subnetMask, index)
@@ -165,6 +176,13 @@ class CFScanner @Inject constructor(
                     if (skipIndex >= index) {
                         return@repeat
                     }
+
+                    // skip range
+                    if(skipCurrentRange){
+                        skipped++
+                        return@repeat
+                    }
+
 
                     semaphore.acquire()
                     scope.launch {
@@ -199,7 +217,14 @@ class CFScanner @Inject constructor(
                         semaphore.release()
                     }
                 }
-                logger.add(Log(cidr.address, context.getString(R.string.end_scan_for,cidr.address,cidr.subnetMask), STATUS.SUCCESS))
+
+                skipCurrentRange = false
+
+                if(skipped>0){
+                    logger.add(Log(cidr.address+ Random(100).toString(), context.getString(R.string.skipped_range,skipped,cidr.address), STATUS.SUCCESS))
+                }else{
+                    logger.add(Log(cidr.address, context.getString(R.string.end_scan_for,cidr.address,cidr.subnetMask), STATUS.SUCCESS))
+                }
             }
 
             semaphore.tryAcquire(parallel, 10, TimeUnit.SECONDS)

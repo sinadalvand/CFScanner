@@ -113,7 +113,9 @@ fun ScanScreen(
 
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    LogBox(Modifier.fillMaxSize(), log)
+                    LogBox(Modifier.fillMaxSize(), log){
+                        onEventSent.invoke(ScanContract.Event.SkipCurrentRange)
+                    }
                 }
 
                 if (buttonState !is ScanButtonState.Scanning)
