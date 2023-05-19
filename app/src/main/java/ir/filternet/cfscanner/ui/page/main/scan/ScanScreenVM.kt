@@ -68,6 +68,9 @@ class ScanScreenVM @Inject constructor(
             is ScanContract.Event.StopScan -> {
                 stopScan()
             }
+            is ScanContract.Event.DisableNotificationDialog -> {
+                setState { copy(dismissNotificationDialog = true) }
+            }
 
         }
     }
