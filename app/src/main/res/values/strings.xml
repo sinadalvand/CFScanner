@@ -167,4 +167,7 @@
     <string name="auto_skip_desc">use to skip dirty CIDR after checking %s of IPs.</string>
     <string name="specific_proportion">specific proportion</string>
     <string name="auto_skip_triggered_for">Auto skip triggered for %s</string>
+    <string name="scanner_page">Scanner Page</string>
+    <string name="settings_page">Settings page</string>
+    <string name="back">Back</string>
 </resources>

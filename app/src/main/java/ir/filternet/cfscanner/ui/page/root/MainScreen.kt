@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import ir.filternet.cfscanner.R
 import ir.filternet.cfscanner.contracts.SIDE_EFFECTS_KEY
@@ -104,7 +105,10 @@ fun MainScreen(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             index = selectedIndex,
-            icons = arrayOf(R.drawable.ic_cloud_done, R.drawable.ic_network_check, R.drawable.ic_settings),
+            icons = arrayOf(
+                R.drawable.ic_cloud_done to stringResource(R.string.scan_history),
+                R.drawable.ic_network_check to stringResource(R.string.scanner_page),
+                R.drawable.ic_settings to stringResource(R.string.settings_page)),
             unselectedColor = MaterialTheme.colors.onPrimary.copy(0.8f),
             selectedColor = MaterialTheme.colors.onPrimary,
             indicatorColor = MaterialTheme.colors.onPrimary,

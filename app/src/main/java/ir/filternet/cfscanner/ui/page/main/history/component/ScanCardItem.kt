@@ -20,6 +20,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,11 +36,15 @@ import ir.filternet.cfscanner.R
 
 @Composable
 fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
+    val context = LocalContext.current
     val founded = scan.progress.successConnectionCount
+    val configName = scan.config.name
+    val ispName = scan.isp.parseToCommonName(context)
     Card(
         Modifier
             .fillMaxWidth(0.9f)
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .semantics { onClick(label = "Visit scan result for $configName Config by $ispName Internet Service Provider",action = null)},
         elevation = 4.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = MaterialTheme.colors.onSurface,

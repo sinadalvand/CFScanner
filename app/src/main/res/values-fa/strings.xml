@@ -166,4 +166,7 @@
     <string name="auto_skip_desc">برای پرش از رنج های کثیف در صورت کثیف بودن %s از IP ها استفاده می شود.</string>
     <string name="specific_proportion">نسبت مشخصی</string>
     <string name="auto_skip_triggered_for">اعمال پَرش خودکار برای %s</string>
+    <string name="scanner_page">صفحه اسکنر</string>
+    <string name="settings_page">صفحه تنظیمات</string>
+    <string name="back">بازگشت</string>
 </resources>
