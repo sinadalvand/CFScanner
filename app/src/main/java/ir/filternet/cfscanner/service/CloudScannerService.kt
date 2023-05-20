@@ -184,7 +184,7 @@ class CloudScannerService : Service(),
             stopScan()
         }
 
-        fun skipCurrentRange(){
+        fun skipCurrentRange() {
             _skipCurrentRange()
         }
 
@@ -224,7 +224,9 @@ class CloudScannerService : Service(),
                     frontingDomain = scanSettings.fronting,
                     autoFetch = scanSettings.autoFetch,
                     shuffle = scanSettings.shuffle,
-                    customRange = scanSettings.customRange
+                    customRange = scanSettings.customRange,
+                    pingFilter = scanSettings.pingFilter,
+                    autoSkipPortion = scanSettings.autoSkipPortion,
                 )
             )
         }
@@ -238,10 +240,10 @@ class CloudScannerService : Service(),
     }
 
 
-    private fun _skipCurrentRange(){
+    private fun _skipCurrentRange() {
         Timber.d("CloudScannerService skipCurrentRange")
         cfScanner.apply {
-           skipCurrentRange()
+            skipCurrentRange()
         }
     }
 
@@ -254,6 +256,7 @@ class CloudScannerService : Service(),
         Timber.d("CloudScannerService: add connections to db: ${connections.size}")
         val healthyConnections = connections.filter { it.delay > 0 }
         val lastConnection = connections.lastOrNull()
+
         if (healthyConnections.isNotEmpty()) {
             connectionRepository.insertAll(healthyConnections)
         }
@@ -380,7 +383,7 @@ class CloudScannerService : Service(),
         data class Idle(val isp: ISP? = null) : ServiceStatus()
         data class Scanning(val scan: Scan) : ServiceStatus()
         data class Paused(val scan: Scan, val progress: ScanProgress, val message: String) : ServiceStatus()
-        data class WaitingForNetwork(val scan: Scan?= null) : ServiceStatus()
+        data class WaitingForNetwork(val scan: Scan? = null) : ServiceStatus()
         data class Disabled(val message: String) : ServiceStatus()
     }
 }
