@@ -43,8 +43,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
     Card(
         Modifier
             .fillMaxWidth(0.9f)
-            .height(IntrinsicSize.Min)
-            .semantics { onClick(label = "Visit scan result for $configName Config by $ispName Internet Service Provider",action = null)},
+            .height(IntrinsicSize.Min),
         elevation = 4.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = MaterialTheme.colors.onSurface,
@@ -53,7 +52,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
         Row(
             Modifier
                 .fillMaxSize()
-                .clickable { click(scan) },
+                .clickable(onClickLabel = "Visit scan result for $configName Config by $ispName Internet Service Provider") { click(scan) },
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -74,7 +73,7 @@ fun ScanCardItem(scan: Scan, click: (scan: Scan) -> Unit = {}) {
                         .weight(1f)
                         .padding(start = 8.dp)
                 ) {
-                    Text(text = "${scan.config.name} | ${scan.isp.parseToCommonName(context)}")
+                    Text(text = "$configName | $ispName")
                     Spacer(modifier = Modifier.height(5.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
